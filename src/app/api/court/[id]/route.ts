@@ -19,7 +19,10 @@ export async function GET(
       const courtId = parseInt(id, 10)
 
       if (isNaN(courtId)) {
-        throw new ServiceError(ErrorCode.VALIDATION_ERROR, '유효하지 않은 코트 ID입니다.')
+        throw new ServiceError(
+          ErrorCode.VALIDATION_ERROR,
+          '유효하지 않은 코트 ID입니다.'
+        )
       }
 
       const court = await getCourtById(courtId)
@@ -43,20 +46,27 @@ export async function PUT(
   return withAuth(req, async (authenticatedReq, user) => {
     try {
       if (user.roleCode !== MEMBER_ROLE.ADMIN) {
-        throw new ServiceError(ErrorCode.FORBIDDEN, '코트를 수정할 권한이 없습니다.')
+        throw new ServiceError(
+          ErrorCode.FORBIDDEN,
+          '코트를 수정할 권한이 없습니다.'
+        )
       }
 
       const { id } = await params
       const courtId = parseInt(id, 10)
 
       if (isNaN(courtId)) {
-        throw new ServiceError(ErrorCode.VALIDATION_ERROR, '유효하지 않은 코트 ID입니다.')
+        throw new ServiceError(
+          ErrorCode.VALIDATION_ERROR,
+          '유효하지 않은 코트 ID입니다.'
+        )
       }
 
       const body = await authenticatedReq.json()
       const {
         name,
         naver_place_id,
+        naver_business_id,
         rsv_url,
         address,
         is_indoor,
@@ -71,6 +81,7 @@ export async function PUT(
         court_id: courtId,
         name,
         naver_place_id,
+        naver_business_id,
         rsv_url,
         address,
         is_indoor,
@@ -100,19 +111,28 @@ export async function DELETE(
   return withAuth(req, async (_authenticatedReq, user) => {
     try {
       if (user.roleCode !== MEMBER_ROLE.ADMIN) {
-        throw new ServiceError(ErrorCode.FORBIDDEN, '코트를 삭제할 권한이 없습니다.')
+        throw new ServiceError(
+          ErrorCode.FORBIDDEN,
+          '코트를 삭제할 권한이 없습니다.'
+        )
       }
 
       const { id } = await params
       const courtId = parseInt(id, 10)
 
       if (isNaN(courtId)) {
-        throw new ServiceError(ErrorCode.VALIDATION_ERROR, '유효하지 않은 코트 ID입니다.')
+        throw new ServiceError(
+          ErrorCode.VALIDATION_ERROR,
+          '유효하지 않은 코트 ID입니다.'
+        )
       }
 
       await deleteCourt(courtId)
 
-      return NextResponse.json({ success: true, message: '코트가 삭제되었습니다.' })
+      return NextResponse.json({
+        success: true,
+        message: '코트가 삭제되었습니다.',
+      })
     } catch (error) {
       console.error('코트 삭제 에러:', error)
       return handleApiError(error, '코트 삭제 중 오류가 발생했습니다.')

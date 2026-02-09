@@ -37,7 +37,11 @@ export default function Header() {
     ...(!!isLoggedIn
       ? [
           { label: '블라인드', href: '/blind' },
-          { label: '관리', href: '/management' },
+          {
+            ...(isAdmin
+              ? { label: '관리', href: '/management' }
+              : { label: '회원', href: '/member' }),
+          },
         ]
       : []),
   ]

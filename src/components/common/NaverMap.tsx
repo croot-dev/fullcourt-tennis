@@ -1,19 +1,19 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import { Box } from '@chakra-ui/react'
 import { useAlertDialog } from '@/components/ui/alert-dialog'
-import { Court } from '@/app/(web)/reservation/page'
+import type { TennisCourt } from '@/domains/court/court.model'
 import styles from './NaverMap.module.css'
 import Script from 'next/script'
 
 interface NaverMapProps {
-  courts: Court[]
-  selectedCourt?: Court | null
+  courts: TennisCourt[]
+  selectedCourt?: TennisCourt | null
   height?: string
 }
 
-interface ExtendedCourt extends Court {
+interface ExtendedCourt extends TennisCourt {
   address: string
   location: MapLocation
 }
@@ -34,9 +34,19 @@ declare global {
   }
 }
 
+function getCourtUrl(court: TennisCourt): string | undefined {
+  return (
+    court.rsv_url ||
+    (court.naver_place_id
+      ? `https://map.naver.com/p/entry/place/${court.naver_place_id}`
+      : undefined)
+  )
+}
+
 function createInfoWindowContent(courtInfo: ExtendedCourt): string {
-  const { id, name, locationType, address, url } = courtInfo
-  const typeLabel = locationType === 'indoor' ? '실내' : '야외'
+  const { court_id, name, is_indoor, address } = courtInfo
+  const url = getCourtUrl(courtInfo)
+  const typeLabel = is_indoor ? '실내' : '야외'
   const naverMapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address || '')}`
 
   // 복사 아이콘 SVG (Lucide copy icon)
@@ -63,10 +73,9 @@ function createInfoWindowContent(courtInfo: ExtendedCourt): string {
   // 닫기 아이콘 SVG (Lucide share icon)
   const closeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`
 
-  const badgeClass =
-    locationType === 'indoor'
-      ? styles.infoWindowBadgeIndoor
-      : styles.infoWindowBadgeOutdoor
+  const badgeClass = is_indoor
+    ? styles.infoWindowBadgeIndoor
+    : styles.infoWindowBadgeOutdoor
 
   return `
     <div class="${styles.infoWindow}">
@@ -77,7 +86,7 @@ function createInfoWindowContent(courtInfo: ExtendedCourt): string {
         </div>
         <div class="${styles.infoWindowSideBox}">
           <button onclick="${shareScript.replace(/"/g, '&quot;')}" class="${styles.infoWindowIconButton}" title="공유하기">${shareIcon}</button>
-          <button onclick="window.closeNaverInfoWindow && window.closeNaverInfoWindow('${id}')" class="${styles.infoWindowIconButton}" title="정보창 닫기">${closeIcon}</button>
+          <button onclick="window.closeNaverInfoWindow && window.closeNaverInfoWindow('${court_id}')" class="${styles.infoWindowIconButton}" title="정보창 닫기">${closeIcon}</button>
         </div>
       </div>
       <div class="${styles.infoWindowAddressRow}">
@@ -118,7 +127,7 @@ async function searchPlace(query: string): Promise<SearchPlaceResult | null> {
   }
 }
 
-function loadMapTypeSelector(map) {
+function loadMapTypeSelector(map: any) {
   window.naver.maps.Event.once(map, 'init', function () {
     map.setOptions({
       mapTypeControl: true,
@@ -136,8 +145,7 @@ interface MarkerWithInfoWindow {
   court: ExtendedCourt
 }
 
-function createMarkerIcon(locationType: string): any {
-  const isIndoor = locationType === 'indoor'
+function createMarkerIcon(isIndoor: boolean | null): any {
   const color = isIndoor ? '#ED8936' : '#38A169' // 주황색(indoor) / 초록색(outdoor)
 
   return {
@@ -161,7 +169,7 @@ function createMarkerWithInfoWindow(
     position: info.location,
     map: map,
     title: info.name,
-    icon: createMarkerIcon(info.locationType),
+    icon: createMarkerIcon(info.is_indoor),
   })
 
   // InfoWindow 생성
@@ -265,7 +273,7 @@ export default function NaverMap({
     // InfoWindow 닫기 전역 함수 등록
     window.closeNaverInfoWindow = (courtId: string | number) => {
       const markerData = markersRef.current.find(
-        (m) => String(m.court.id) === String(courtId),
+        (m) => String(m.court.court_id) === String(courtId),
       )
       if (markerData) {
         markerData.infoWindow.close()
@@ -283,7 +291,7 @@ export default function NaverMap({
       return
 
     const markerData = markersRef.current.find(
-      (m) => m.court.id === selectedCourt.id,
+      (m) => m.court.court_id === selectedCourt.court_id,
     )
 
     if (markerData) {

@@ -41,13 +41,17 @@ export async function POST(req: NextRequest) {
   return withAuth(req, async (authenticatedReq, user) => {
     try {
       if (user.roleCode !== MEMBER_ROLE.ADMIN) {
-        throw new ServiceError(ErrorCode.FORBIDDEN, '코트를 생성할 권한이 없습니다.')
+        throw new ServiceError(
+          ErrorCode.FORBIDDEN,
+          '코트를 생성할 권한이 없습니다.'
+        )
       }
 
       const body = await authenticatedReq.json()
       const {
         name,
         naver_place_id,
+        naver_business_id,
         rsv_url,
         address,
         is_indoor,
@@ -61,6 +65,7 @@ export async function POST(req: NextRequest) {
       const court = await createCourt({
         name,
         naver_place_id,
+        naver_business_id,
         rsv_url,
         address,
         is_indoor,

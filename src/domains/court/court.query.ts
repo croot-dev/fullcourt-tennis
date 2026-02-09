@@ -17,7 +17,7 @@ import {
  */
 export async function getCourtList(
   page: number = 1,
-  limit: number = 10,
+  limit: number = 10
 ): Promise<CourtListResult> {
   const offset = (page - 1) * limit
 
@@ -25,7 +25,7 @@ export async function getCourtList(
     sql`
       SELECT *
       FROM tennis_courts
-      ORDER BY created_at DESC
+      ORDER BY name DESC
       LIMIT ${limit}
       OFFSET ${offset}
     `,
@@ -44,7 +44,9 @@ export async function getCourtList(
 /**
  * 코트 단건 조회
  */
-export async function getCourtById(courtId: number): Promise<TennisCourt | null> {
+export async function getCourtById(
+  courtId: number
+): Promise<TennisCourt | null> {
   const result = (await sql`
     SELECT * FROM tennis_courts WHERE court_id = ${courtId}
   `) as TennisCourt[]
@@ -59,6 +61,7 @@ export async function createCourt(data: CreateCourtDto): Promise<TennisCourt> {
   const {
     name,
     naver_place_id,
+    naver_business_id,
     rsv_url,
     address,
     is_indoor,
@@ -73,6 +76,7 @@ export async function createCourt(data: CreateCourtDto): Promise<TennisCourt> {
     INSERT INTO tennis_courts (
       name,
       naver_place_id,
+      naver_business_id,
       rsv_url,
       address,
       is_indoor,
@@ -87,6 +91,7 @@ export async function createCourt(data: CreateCourtDto): Promise<TennisCourt> {
     VALUES (
       ${name},
       ${naver_place_id || null},
+      ${naver_business_id || null},
       ${rsv_url || null},
       ${address || null},
       ${is_indoor ?? null},
@@ -112,6 +117,7 @@ export async function updateCourt(data: UpdateCourtDto): Promise<TennisCourt> {
     court_id,
     name,
     naver_place_id,
+    naver_business_id,
     rsv_url,
     address,
     is_indoor,
@@ -127,6 +133,7 @@ export async function updateCourt(data: UpdateCourtDto): Promise<TennisCourt> {
     SET
       name = ${name},
       naver_place_id = ${naver_place_id || null},
+      naver_business_id = ${naver_business_id || null},
       rsv_url = ${rsv_url || null},
       address = ${address || null},
       is_indoor = ${is_indoor ?? null},

@@ -16,6 +16,7 @@ import {
 import { useCourts, useDeleteCourt } from '@/hooks/useCourt'
 import { COURT_TYPE_LABEL, type CourtType } from '@/constants'
 import CourtFormDialog from './_components/CourtFormDialog'
+import CourtCard from '@/components/common/CourtCard'
 import type { TennisCourt } from '@/domains/court/court.model'
 
 export default function ManagementCourtPage() {
@@ -98,59 +99,14 @@ export default function ManagementCourtPage() {
           ) : (
             <Stack gap={3}>
               {courts.map((court) => (
-                <Box
+                <CourtCard
                   key={court.court_id}
-                  p={4}
-                  border="1px solid"
-                  borderColor="gray.200"
-                  borderRadius="md"
-                >
-                  <Flex justify="space-between" align="start" mb={2}>
-                    <Text fontWeight="bold">{court.name}</Text>
-                    <Flex gap={2}>
-                      {court.is_indoor !== null && (
-                        <Badge
-                          colorPalette={court.is_indoor ? 'blue' : 'green'}
-                        >
-                          {court.is_indoor ? '실내' : '실외'}
-                        </Badge>
-                      )}
-                      {court.court_type && (
-                        <Badge colorPalette="purple">
-                          {COURT_TYPE_LABEL[court.court_type as CourtType]}
-                        </Badge>
-                      )}
-                    </Flex>
-                  </Flex>
-                  {court.address && (
-                    <Text fontSize="sm" color="gray.600" mb={2}>
-                      {court.address}
-                    </Text>
-                  )}
-                  {court.court_count && (
-                    <Text fontSize="sm" color="gray.500" mb={2}>
-                      코트 {court.court_count}면
-                    </Text>
-                  )}
-                  <Flex gap={2} mt={3}>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(court)}
-                    >
-                      수정
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      colorPalette="red"
-                      onClick={() => handleDelete(court.court_id)}
-                      loading={deleteMutation.isPending}
-                    >
-                      삭제
-                    </Button>
-                  </Flex>
-                </Box>
+                  court={court}
+                  editable
+                  isDeletePending={deleteMutation.isPending}
+                  onEdit={() => handleEdit(court)}
+                  onDelete={() => handleDelete(court.court_id)}
+                />
               ))}
             </Stack>
           )}

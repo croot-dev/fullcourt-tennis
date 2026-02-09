@@ -35,6 +35,7 @@ interface CourtFormDialogProps {
 interface FormValues {
   name: string
   naver_place_id: string
+  naver_business_id: string
   rsv_url: string
   address: string
   is_indoor: string
@@ -64,6 +65,7 @@ export default function CourtFormDialog({
     defaultValues: {
       name: '',
       naver_place_id: '',
+      naver_business_id: '',
       rsv_url: '',
       address: '',
       is_indoor: '',
@@ -81,6 +83,7 @@ export default function CourtFormDialog({
         reset({
           name: court.name,
           naver_place_id: court.naver_place_id || '',
+          naver_business_id: court.naver_business_id || '',
           rsv_url: court.rsv_url || '',
           address: court.address || '',
           is_indoor: court.is_indoor === null ? '' : String(court.is_indoor),
@@ -94,6 +97,7 @@ export default function CourtFormDialog({
         reset({
           name: '',
           naver_place_id: '',
+          naver_business_id: '',
           rsv_url: '',
           address: '',
           is_indoor: '',
@@ -117,6 +121,7 @@ export default function CourtFormDialog({
         name: data.name,
         naver_place_id: data.naver_place_id || null,
         rsv_url: data.rsv_url || null,
+        naver_business_id: data.naver_business_id || null,
         address: data.address || null,
         is_indoor: data.is_indoor === '' ? null : data.is_indoor === 'true',
         court_type: (data.court_type || null) as CourtType | null,
@@ -226,6 +231,14 @@ export default function CourtFormDialog({
                   <Input
                     placeholder="네이버 플레이스 ID"
                     {...register('naver_place_id')}
+                  />
+                </Field.Root>
+
+                <Field.Root>
+                  <Field.Label>네이버 예약 Business ID</Field.Label>
+                  <Input
+                    placeholder="예: 767366"
+                    {...register('naver_business_id')}
                   />
                 </Field.Root>
 

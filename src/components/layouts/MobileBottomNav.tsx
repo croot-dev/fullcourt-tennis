@@ -3,13 +3,14 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LuLayoutDashboard, LuCalendar, LuUsers } from 'react-icons/lu'
+import { LuLayoutDashboard, LuCalendar, LuBookPlus } from 'react-icons/lu'
 import { useUserInfo } from '@/hooks/useAuth'
 
 const navItems = [
   { label: '대시보드', href: '/dashboard', icon: LuLayoutDashboard },
-  { label: '일정/예약', href: '/schedule', icon: LuCalendar },
-  { label: '회원목록', href: '/member', icon: LuUsers },
+  { label: '일정', href: '/schedule', icon: LuCalendar },
+  { label: '예약', href: '/reservation', icon: LuBookPlus },
+  // { label: '회원목록', href: '/member', icon: LuUsers },
 ]
 
 export default function MobileBottomNav() {
@@ -50,7 +51,11 @@ export default function MobileBottomNav() {
                   _hover={{ color: 'teal.500' }}
                 >
                   <Icon size={24} />
-                  <Text fontSize="xs" mt={1} fontWeight={isActive ? 'bold' : 'normal'}>
+                  <Text
+                    fontSize="xs"
+                    mt={1}
+                    fontWeight={isActive ? 'bold' : 'normal'}
+                  >
                     {item.label}
                   </Text>
                 </Flex>

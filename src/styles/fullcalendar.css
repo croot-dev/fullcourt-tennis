@@ -32,6 +32,10 @@
   background-color: #ffffff;
 }
 
+.fc-day-selected {
+  background-color: rgba(49, 151, 149, 0.15) !important;
+}
+
 @media screen and (max-width: 64rem) {
   .fc .fc-toolbar-title {
     font-size: var(--fc-small-font-size);
