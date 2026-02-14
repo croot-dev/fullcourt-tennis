@@ -6,6 +6,7 @@ import { TennisCourt } from '@/domains/court'
 import CourtCard from '@/components/common/CourtCard'
 import { LuBookPlus } from 'react-icons/lu'
 import TimeSlotGrid from './TimeSlotGrid'
+import GyTennisTimeSlotGrid from './GyTennisTimeSlotGrid'
 
 interface CourtListProps {
   courts: TennisCourt[]
@@ -15,6 +16,16 @@ interface CourtListProps {
 
 export default function CourtList({ courts, selectedDate }: CourtListProps) {
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
+
+  const isGyTennisUrl = (url: string | null) => {
+    if (!url) return false
+    try {
+      const parsed = new URL(url)
+      return /(^|\.)gytennis\.or\.kr$/i.test(parsed.hostname)
+    } catch {
+      return false
+    }
+  }
 
   const toggleExpand = (courtId: number) => {
     setExpandedIds((prev) => {
@@ -46,20 +57,32 @@ export default function CourtList({ courts, selectedDate }: CourtListProps) {
   }
 
   const renderTimeSlots = (court: TennisCourt) => {
-    if (!court.naver_business_id) return null
     if (!expandedIds.has(court.court_id)) return null
-    return (
-      <Box mt={1} onClick={(e) => e.stopPropagation()}>
-        <TimeSlotGrid
-          businessId={court.naver_business_id!}
-          date={selectedDate}
-        />
-      </Box>
-    )
+
+    if (court.naver_business_id) {
+      return (
+        <Box mt={1} onClick={(e) => e.stopPropagation()}>
+          <TimeSlotGrid
+            businessId={court.naver_business_id}
+            date={selectedDate}
+          />
+        </Box>
+      )
+    }
+
+    if (isGyTennisUrl(court.rsv_url)) {
+      return (
+        <Box mt={1} onClick={(e) => e.stopPropagation()}>
+          <GyTennisTimeSlotGrid rsvUrl={court.rsv_url!} date={selectedDate} />
+        </Box>
+      )
+    }
+
+    return null
   }
 
   const expandableIds = courts
-    .filter((c) => c.naver_business_id)
+    .filter((c) => c.naver_business_id || isGyTennisUrl(c.rsv_url))
     .map((c) => c.court_id)
 
   const expandAll = () => setExpandedIds(new Set(expandableIds))
