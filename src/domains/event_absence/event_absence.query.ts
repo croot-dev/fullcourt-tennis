@@ -219,19 +219,11 @@ export async function getAbsenceCountByMember(
   memberSeq: number,
   absenceType?: string
 ): Promise<number> {
-  if (absenceType) {
-    const result = (await sql`
-      SELECT COUNT(*) AS count
-      FROM event_absence
-      WHERE member_seq = ${memberSeq} AND absence_type = ${absenceType}
-    `) as { count: number }[]
-    return Number(result[0].count)
-  }
-
   const result = (await sql`
     SELECT COUNT(*) AS count
     FROM event_absence
     WHERE member_seq = ${memberSeq}
+      AND (${absenceType ?? null} IS NULL OR absence_type = ${absenceType ?? null})
   `) as { count: number }[]
 
   return Number(result[0].count)

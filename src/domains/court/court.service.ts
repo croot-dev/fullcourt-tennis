@@ -25,8 +25,9 @@ import { ServiceError, ErrorCode } from '@/lib/error'
 export async function getCourtList(
   page: number = 1,
   limit: number = 10,
+  isIndoor?: boolean,
 ): Promise<CourtListResult> {
-  return await findCourtList(page, limit)
+  return await findCourtList(page, limit, isIndoor)
 }
 
 /**

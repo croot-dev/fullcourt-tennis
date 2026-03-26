@@ -9,6 +9,7 @@ import {
   IconButton,
   Text,
 } from '@chakra-ui/react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMemo, useState } from 'react'
@@ -65,14 +66,13 @@ export default function Header() {
         <Flex h={16} align="center" justify="space-between">
           {/* Logo */}
           <Link href="/">
-            <Box
-              fontWeight="bold"
-              fontSize="xl"
-              color="teal.500"
-              cursor="pointer"
-            >
-              이테모
-            </Box>
+            <Image
+              src="/logo.png"
+              alt="이테모"
+              width={40}
+              height={40}
+              style={{ objectFit: 'contain' }}
+            />
           </Link>
 
           {/* Desktop Navigation */}

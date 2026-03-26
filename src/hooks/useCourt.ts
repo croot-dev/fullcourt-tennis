@@ -18,12 +18,14 @@ export const courtKeys = {
 /**
  * 코트 목록 조회
  */
-export function useCourts(page: number = 1, limit: number = 10) {
+export function useCourts(page: number = 1, limit: number = 10, isIndoor?: boolean) {
   return useQuery({
-    queryKey: [...courtKeys.list(), page, limit],
+    queryKey: [...courtKeys.list(), page, limit, isIndoor],
     queryFn: async () => {
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+      if (isIndoor !== undefined) params.set('isIndoor', String(isIndoor))
       return await request<CourtListResult & { page: number; limit: number }>(
-        `/api/court?page=${page}&limit=${limit}`
+        `/api/court?${params.toString()}`
       )
     },
   })

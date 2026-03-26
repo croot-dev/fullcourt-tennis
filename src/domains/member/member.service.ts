@@ -8,6 +8,7 @@ import { Member, MemberWithRole, MemberListResult } from './member.model'
 import {
   findMemberByNickname,
   findMemberById,
+  findMemberBySeq,
   findMemberByIdWithRole,
   findMemberList,
   updateMember,
@@ -25,6 +26,13 @@ interface ModifyMemberData {
   ntrp: string
   gender: MemberGender
   phone?: string | null
+}
+
+/**
+ * seq(PK)로 회원 상세 조회 (역할 포함) — 내부 DB 조회에 사용
+ */
+export async function getMemberBySeq(seq: number): Promise<MemberWithRole | null> {
+  return await findMemberBySeq(seq)
 }
 
 /**

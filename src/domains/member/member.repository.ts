@@ -8,6 +8,7 @@ import {
   getMemberByEmail as getMemberByEmailQuery,
   getMemberByNickname as getMemberByNicknameQuery,
   getMemberById as getMemberByIdQuery,
+  getMemberBySeq as getMemberBySeqQuery,
   getMemberByIdWithRole as getMemberByIdWithRoleQuery,
   getMemberList as getMemberListQuery,
   createMember as createMemberQuery,
@@ -45,6 +46,13 @@ export async function findMemberByNickname(
  */
 export async function findMemberById(id: string): Promise<Member | null> {
   return getMemberByIdQuery(id)
+}
+
+/**
+ * seq(PK)로 회원 조회 (역할 포함)
+ */
+export async function findMemberBySeq(seq: number): Promise<MemberWithRole | null> {
+  return getMemberBySeqQuery(seq)
 }
 
 /**

@@ -24,8 +24,9 @@ import {
 export async function findCourtList(
   page: number = 1,
   limit: number = 10,
+  isIndoor?: boolean,
 ): Promise<CourtListResult> {
-  return getCourtListQuery(page, limit)
+  return getCourtListQuery(page, limit, isIndoor)
 }
 
 /**

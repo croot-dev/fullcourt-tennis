@@ -45,7 +45,7 @@ export async function getPostById(post_id: number, bbs_type_id: number = 1) {
  * 게시글 생성
  */
 export async function writePost(data: CreatePostDto) {
-  const { bbs_type_id, title, content, writer_id } = data
+  const { bbs_type_id, title, content, writer_seq } = data
 
   // 유효성 검증
   if (!title || title.trim().length === 0) {
@@ -56,11 +56,11 @@ export async function writePost(data: CreatePostDto) {
     throw new ServiceError(ErrorCode.VALIDATION_ERROR, '내용을 입력해주세요.')
   }
 
-  if (!writer_id) {
+  if (!writer_seq) {
     throw new ServiceError(ErrorCode.UNAUTHORIZED, '작성자 정보가 필요합니다.')
   }
 
-  return createPost({ bbs_type_id, title, content, writer_id })
+  return createPost({ bbs_type_id, title, content, writer_seq })
 }
 
 /**
@@ -71,7 +71,7 @@ export async function modifyPost(
   data: {
     title: string
     content: string
-    user_id: string
+    user_id: number
   },
   bbs_type_id: number = 1
 ): Promise<PostDto | null> {
@@ -100,7 +100,7 @@ export async function modifyPost(
   }
 
   // 작성자 권한 확인
-  if (existingPost.writer_id !== user_id) {
+  if (existingPost.writer_seq !== user_id) {
     throw new ServiceError(
       ErrorCode.NOT_OWNER,
       '게시글을 수정할 권한이 없습니다.'
@@ -115,7 +115,7 @@ export async function modifyPost(
  */
 export async function removePost(
   post_id: number,
-  user_id: string,
+  user_id: number,
   bbs_type_id: number = 1
 ): Promise<boolean> {
   if (!post_id || post_id < 1) {
@@ -139,7 +139,7 @@ export async function removePost(
   }
 
   // 작성자 권한 확인
-  if (existingPost.writer_id !== user_id) {
+  if (existingPost.writer_seq !== user_id) {
     throw new ServiceError(
       ErrorCode.NOT_OWNER,
       '게시글을 삭제할 권한이 없습니다.'

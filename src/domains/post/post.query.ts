@@ -5,7 +5,7 @@
 
 import 'server-only'
 import { sql } from '@/lib/db.server'
-import { PostListFilter, PostListItem, PostDto, CreatePostDto } from './post.model'
+import { PostListItem, PostDto, CreatePostDto } from './post.model'
 import { ResponseList, ResponsePaging } from '../common/response.query'
 
 /**
@@ -15,7 +15,6 @@ export async function getPostList(
   bbs_type_id: number = 1,
   page: number = 1,
   limit: number = 10,
-  filter?: PostListFilter // 필터 추가
 ): Promise<ResponseList<PostListItem>> {
   const offset = (page - 1) * limit
   const conditions = [
@@ -31,16 +30,16 @@ export async function getPostList(
         p.post_id,
         p.bbs_type_id,
         p.title,
-        p.writer_id,
+        p.writer_seq,
         p.view_count,
         p.created_at,
         p.updated_at,
         m.nickname as writer_name
       FROM bbs_post p
       LEFT JOIN member m
-        ON p.writer_id = m.member_id
+        ON p.writer_seq = m.seq
       WHERE ${whereClause}
-      ORDER BY created_at DESC
+      ORDER BY p.created_at DESC
       LIMIT ${limit}
       OFFSET ${offset}
     `,
@@ -71,14 +70,14 @@ export async function getPost(
       p.bbs_type_id,
       p.title,
       p.content,
-      p.writer_id,
+      p.writer_seq,
       p.view_count,
       p.created_at,
       p.updated_at,
       m.nickname as writer_name
     FROM bbs_post p
       LEFT JOIN member m
-        ON p.writer_id = m.member_id
+        ON p.writer_seq = m.seq
     WHERE post_id = ${post_id} 
       AND bbs_type_id = ${bbs_type_id}
   `) as PostListItem[]
@@ -90,14 +89,14 @@ export async function getPost(
  * 게시글 생성
  */
 export async function createPost(data: CreatePostDto) {
-  const { bbs_type_id, title, content, writer_id } = data
+  const { bbs_type_id, title, content, writer_seq } = data
   // 데이터베이스에 게시글 저장
   const newPost = await sql`
     INSERT INTO bbs_post (
       bbs_type_id,
       title,
       content,
-      writer_id,
+      writer_seq,
       created_at,
       updated_at
     )
@@ -105,11 +104,11 @@ export async function createPost(data: CreatePostDto) {
       ${bbs_type_id},
       ${title},
       ${content},
-      ${writer_id},
+      ${writer_seq},
       NOW(),
       NOW()
     )
-    RETURNING post_id, bbs_type_id, title, content, writer_id, view_count, created_at, updated_at
+    RETURNING post_id, bbs_type_id, title, content, writer_seq, view_count, created_at, updated_at
   `
 
   return newPost[0] as PostListItem
@@ -132,7 +131,7 @@ export async function updatePost(
       content = ${content.trim()},
       updated_at = NOW()
     WHERE post_id = ${post_id} AND bbs_type_id = ${bbs_type_id}
-    RETURNING post_id, bbs_type_id, title, content, writer_id, view_count, created_at, updated_at
+    RETURNING post_id, bbs_type_id, title, content, writer_seq, view_count, created_at, updated_at
   `) as PostDto[]
 
   return updatedPost[0] || null

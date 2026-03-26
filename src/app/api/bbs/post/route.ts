@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
         bbs_type_id: parseInt(bbs_type_id) || 1,
         title,
         content,
-        writer_id:
-          Number(bbs_type_id) === BBS_TYPE.BLIND ? '0' : user?.memberId,
+        writer_seq:
+          Number(bbs_type_id) === BBS_TYPE.BLIND ? 0 : user?.memberSeq,
       })
 
       return NextResponse.json(result)

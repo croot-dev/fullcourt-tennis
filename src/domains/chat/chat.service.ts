@@ -42,14 +42,17 @@ const SYSTEM_PROMPT = `당신은 "이름없는 테니스 모임(이테모)"의 A
 
 주요 규칙:
 - 현재 날짜/시간 기준: 한국 시간(KST, UTC+9)
-- 현재 연도는 2026년입니다.
+- 일정 생성 시 사용자가 년,월을 말하지 않으면 현재 날짜 기준
 - 일정 생성 시 사용자가 종료 시간을 말하지 않으면 시작 시간 + 2시간으로 설정
-- 일정 생성 시 사용자가 최대 인원을 말하지 않으면 8명으로 설정
+- 일정 생성 시 사용자가 최대 인원을 말하지 않으면 4명으로 설정
 - 일정 생성 시 사용자가 제목을 말하지 않으면 장소명 + "테니스" 형태로 설정 (예: "고양체육관 테니스")
 - 코트 목록에 있는 장소명과 사용자가 말한 장소를 매칭하여 location_name과 location_url을 설정
 - 사용자가 코트 목록, 장소 정보, 테니스장 등을 물어보면 get_courts 도구로 조회하여 이름, 주소, 실내/실외 여부 등을 안내
 - 친근하고 간결하게 응답하세요. 한국어로 대화합니다.
-- 일정 생성 완료 후에는 생성된 일정의 요약 정보를 보여주세요.`
+- 일정 생성 완료 후에는 생성된 일정의 요약 정보를 보여주세요.
+- 회칙/공지/규정/예약/우천취소/게스트 정책 등 문서 기반 질문은 먼저 search_docs 도구로 근거를 찾고 답하세요.
+- search_docs 결과(hits)가 비어있거나 근거가 약하면 "문서에서 확인되지 않는다"라고 말하고 운영진에게 문의를 안내하세요.
+- 답변에는 근거 문서 제목을 짧게 같이 표시하세요.`
 
 /**
  * Claude가 요청한 도구를 실행하고 결과를 JSON 문자열로 반환
@@ -58,7 +61,7 @@ const SYSTEM_PROMPT = `당신은 "이름없는 테니스 모임(이테모)"의 A
 async function executeToolCall(
   toolName: string,
   toolInput: Record<string, unknown>,
-  hostMemberSeq: number
+  hostMemberSeq: number,
 ): Promise<string> {
   switch (toolName) {
     // 일정 생성: writeEvent() 호출 → DB에 이벤트 INSERT
@@ -123,6 +126,14 @@ async function executeToolCall(
         })),
       })
     }
+    case 'search_docs': {
+      const { query } = toolInput as { query: string; top_k?: number }
+      return JSON.stringify({
+        query,
+        hits: [],
+        message: '문서 검색 기능이 아직 준비되지 않았습니다. 운영진에게 문의해 주세요.',
+      })
+    }
 
     default:
       return JSON.stringify({ error: `알 수 없는 도구: ${toolName}` })
@@ -141,7 +152,7 @@ async function executeToolCall(
  */
 export async function processChatStream(
   messages: ChatMessage[],
-  hostMemberSeq: number
+  hostMemberSeq: number,
 ): Promise<ReadableStream<Uint8Array>> {
   const encoder = new TextEncoder()
 
@@ -153,7 +164,7 @@ export async function processChatStream(
           (m) => ({
             role: m.role,
             content: m.content,
-          })
+          }),
         )
 
         let continueLoop = true
@@ -162,7 +173,7 @@ export async function processChatStream(
         while (continueLoop) {
           const response = await anthropic.messages.create({
             model: 'claude-sonnet-4-20250514',
-            max_tokens: 1024,
+            max_tokens: 4096,
             system: SYSTEM_PROMPT,
             tools: chatTools,
             messages: anthropicMessages,
@@ -170,64 +181,67 @@ export async function processChatStream(
 
           if (response.stop_reason === 'tool_use') {
             // Claude가 도구 호출을 요청한 경우
+            // 도구 호출 전 텍스트가 있으면 먼저 전송
             for (const block of response.content) {
-              // 도구 호출 전 텍스트가 있으면 먼저 전송
               if (block.type === 'text' && block.text) {
                 controller.enqueue(
                   encoder.encode(
                     `data: ${JSON.stringify({
                       type: 'text',
                       content: block.text,
-                    })}\n\n`
-                  )
+                    })}\n\n`,
+                  ),
                 )
               }
+            }
 
+            // assistant 메시지는 한 번만 추가 (tool_use 블록이 여러 개여도 동일)
+            anthropicMessages.push({
+              role: 'assistant',
+              content: response.content,
+            })
+
+            // 모든 tool_use 블록을 실행하고 결과를 한 번에 모아서 전달
+            const toolResults: Anthropic.ToolResultBlockParam[] = []
+            for (const block of response.content) {
               if (block.type === 'tool_use') {
-                // 프론트엔드에 도구 실행 시작 알림
                 controller.enqueue(
                   encoder.encode(
                     `data: ${JSON.stringify({
                       type: 'tool_start',
                       tool: block.name,
-                    })}\n\n`
-                  )
+                    })}\n\n`,
+                  ),
                 )
 
-                // 실제 도구 실행 (DB 작업)
                 const toolResult = await executeToolCall(
                   block.name,
                   block.input as Record<string, unknown>,
-                  hostMemberSeq
+                  hostMemberSeq,
                 )
 
-                // 프론트엔드에 도구 실행 완료 알림
                 controller.enqueue(
                   encoder.encode(
                     `data: ${JSON.stringify({
                       type: 'tool_end',
                       tool: block.name,
-                    })}\n\n`
-                  )
+                    })}\n\n`,
+                  ),
                 )
 
-                // Claude에게 도구 실행 결과를 전달하여 최종 응답 생성 유도
-                anthropicMessages.push({
-                  role: 'assistant',
-                  content: response.content,
-                })
-                anthropicMessages.push({
-                  role: 'user',
-                  content: [
-                    {
-                      type: 'tool_result',
-                      tool_use_id: block.id,
-                      content: toolResult,
-                    },
-                  ],
+                toolResults.push({
+                  type: 'tool_result',
+                  tool_use_id: block.id,
+                  content: toolResult,
                 })
               }
             }
+
+            // tool_result 메시지도 한 번에 추가
+            anthropicMessages.push({
+              role: 'user',
+              content: toolResults,
+            })
           } else {
             // 최종 텍스트 응답 (도구 호출 없음)
             for (const block of response.content) {
@@ -237,8 +251,8 @@ export async function processChatStream(
                     `data: ${JSON.stringify({
                       type: 'text',
                       content: block.text,
-                    })}\n\n`
-                  )
+                    })}\n\n`,
+                  ),
                 )
               }
             }
@@ -248,7 +262,7 @@ export async function processChatStream(
 
         // 스트림 종료 신호
         controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`)
+          encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`),
         )
         controller.close()
       } catch (error) {
@@ -258,8 +272,8 @@ export async function processChatStream(
             `data: ${JSON.stringify({
               type: 'error',
               content: '처리 중 오류가 발생했습니다.',
-            })}\n\n`
-          )
+            })}\n\n`,
+          ),
         )
         controller.close()
       }

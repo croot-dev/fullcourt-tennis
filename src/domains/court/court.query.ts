@@ -17,21 +17,27 @@ import {
  */
 export async function getCourtList(
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  isIndoor?: boolean,
 ): Promise<CourtListResult> {
   const offset = (page - 1) * limit
 
   const [courts, countResult] = (await Promise.all([
-    sql`
-      SELECT *
-      FROM tennis_courts
-      ORDER BY name DESC
-      LIMIT ${limit}
-      OFFSET ${offset}
-    `,
-    sql`
-      SELECT COUNT(*) as total FROM tennis_courts
-    `,
+    isIndoor === undefined
+      ? sql`
+          SELECT * FROM tennis_courts
+          ORDER BY name DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `
+      : sql`
+          SELECT * FROM tennis_courts
+          WHERE is_indoor = ${isIndoor}
+          ORDER BY name DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `,
+    isIndoor === undefined
+      ? sql`SELECT COUNT(*) as total FROM tennis_courts`
+      : sql`SELECT COUNT(*) as total FROM tennis_courts WHERE is_indoor = ${isIndoor}`,
   ])) as [TennisCourt[], { total: number }[]]
 
   return {

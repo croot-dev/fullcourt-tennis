@@ -31,7 +31,9 @@ export interface MemberWithRole extends Member {
  * 회원 생성 DTO
  */
 export interface CreateMemberDto {
+  member_id: string
   email: string
+  password_hash: string
   name: string
   birthdate: string
   nickname: string

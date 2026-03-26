@@ -46,4 +46,5 @@ next-env.d.ts
 !.vscode/extensions.json
 !.vscode/settings.json
 
-DDL
+# DDL
+SCHEMA.sql

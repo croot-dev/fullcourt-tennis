@@ -10,7 +10,7 @@ export interface PostDto {
   bbs_type_id: number
   title: string
   content?: string
-  writer_id: string
+  writer_seq: number  // member.seq (내부 PK)
   view_count: number
   created_at: string
   updated_at: string
@@ -23,7 +23,7 @@ export interface CreatePostDto {
   bbs_type_id: number
   title: string
   content: string
-  writer_id: string
+  writer_seq: number  // member.seq (내부 PK)
 }
 
 /**

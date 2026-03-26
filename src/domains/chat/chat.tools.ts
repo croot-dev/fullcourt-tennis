@@ -39,12 +39,7 @@ export const chatTools: Anthropic.Tool[] = [
           description: '일정 설명',
         },
       },
-      required: [
-        'title',
-        'start_datetime',
-        'end_datetime',
-        'max_participants',
-      ],
+      required: ['title', 'start_datetime', 'end_datetime', 'max_participants'],
     },
   },
   {
@@ -83,6 +78,19 @@ export const chatTools: Anthropic.Tool[] = [
         },
       },
       required: [],
+    },
+  },
+  {
+    name: 'search_docs',
+    description:
+      '동호회 문서(회칙/공지/규정/코트 이용 안내 등)에서 질문과 관련된 내용을 검색합니다.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        query: { type: 'string', description: '검색 질의' },
+        top_k: { type: 'number', description: '반환 문서 개수(기본 5)' },
+      },
+      required: ['query'],
     },
   },
 ]

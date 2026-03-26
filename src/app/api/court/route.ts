@@ -19,7 +19,10 @@ export async function GET(req: NextRequest) {
         searchParams.get('limit')
       )
 
-      const result = await getCourtList(page, limit)
+      const isIndoorParam = searchParams.get('isIndoor')
+      const isIndoor = isIndoorParam === null ? undefined : isIndoorParam === 'true'
+
+      const result = await getCourtList(page, limit, isIndoor)
 
       return NextResponse.json({
         ...result,

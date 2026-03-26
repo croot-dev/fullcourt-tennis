@@ -51,19 +51,15 @@ export async function GET(req: NextRequest) {
 
   // 기존 사용자인 경우 JWT 토큰 생성 및 쿠키 설정
   if (existingUser) {
-    const accessToken = await createAccessToken({
+    const tokenPayload = {
       memberId: existingUser.member_id,
+      memberSeq: existingUser.seq,
       email: existingUser.email,
       roleName: existingUser.role_name,
       roleCode: existingUser.role_code,
-    })
-
-    const refreshToken = await createRefreshToken({
-      memberId: existingUser.member_id,
-      email: existingUser.email,
-      roleName: existingUser.role_name,
-      roleCode: existingUser.role_code,
-    })
+    }
+    const accessToken = await createAccessToken(tokenPayload)
+    const refreshToken = await createRefreshToken(tokenPayload)
 
     const response = NextResponse.json({
       token: tokenData,

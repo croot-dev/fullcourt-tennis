@@ -11,7 +11,8 @@ const ACCESS_TOKEN_EXPIRY = '15m' // 15분
 const REFRESH_TOKEN_EXPIRY = '7d' // 7일
 
 export interface TokenPayload {
-  memberId: string
+  memberId: string   // 카카오 로그인 ID (인증 경계에서만 사용)
+  memberSeq: number  // 내부 PK (DB 조회에 사용)
   roleCode?: string
   roleName?: string
   email?: string
@@ -51,9 +52,10 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
     const { payload } = await jwtVerify(token, JWT_SECRET)
 
     // payload에서 필요한 필드만 추출하여 TokenPayload로 변환
-    if (payload && typeof payload.memberId === 'string') {
+    if (payload && typeof payload.memberId === 'string' && typeof payload.memberSeq === 'number') {
       return {
         memberId: payload.memberId,
+        memberSeq: payload.memberSeq,
         roleCode: payload.roleCode as string | undefined,
         roleName: payload.roleName as string | undefined,
         email: payload.email as string | undefined,

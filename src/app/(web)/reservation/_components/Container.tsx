@@ -1,31 +1,37 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Box, Container, Flex, Tabs, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  Flex,
+  Tabs,
+  Text,
+} from '@chakra-ui/react'
 import { LuCalendar, LuMapPin } from 'react-icons/lu'
-import type { CalendarEvent } from '@/hooks/useEvent'
 import Calendar from './Calendar'
 import CourtList from './CourtList'
 import CourtReservation from './CourtReservation'
 import { useCourts } from '@/hooks/useCourt'
 
-interface ContainerProps {
-  initialEvents: CalendarEvent[]
-}
-
-export default function ScheduleContainer({ initialEvents }: ContainerProps) {
+export default function ScheduleContainer() {
   const now = new Date()
   const [currentMonth, setCurrentMonth] = useState({
     year: now.getFullYear(),
     month: now.getMonth() + 1,
   })
   const [selectedDate, setSelectedDate] = useState<string>(
-    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
   )
   const [calendarKey, setCalendarKey] = useState(0)
 
   const [currentPage, setCurrentPage] = useState(1)
-  const { data, isLoading, isError } = useCourts(currentPage, 10)
+  const [indoorFilter, setIndoorFilter] = useState<boolean | undefined>(
+    undefined,
+  )
+  const { data, isLoading, isError } = useCourts(currentPage, 10, indoorFilter)
 
   const handleMonthChange = useCallback((year: number, month: number) => {
     setCurrentMonth({ year, month })
@@ -80,10 +86,41 @@ export default function ScheduleContainer({ initialEvents }: ContainerProps) {
         <Tabs.Content value="schedule">
           <Flex direction={{ base: 'column', lg: 'row' }} gap={4}>
             <Box flex={3}>
-              <Calendar key={calendarKey} onMonthChange={handleMonthChange} onDateSelect={handleDateSelect} />
+              <Calendar
+                key={calendarKey}
+                onMonthChange={handleMonthChange}
+                onDateSelect={handleDateSelect}
+              />
             </Box>
             <Box flex={1}>
-              <CourtList courts={courts} currentMonth={currentMonth} selectedDate={selectedDate} />
+              <ButtonGroup mt={3} size="sm">
+                <Button
+                  onClick={() => setIndoorFilter(undefined)}
+                  colorPalette={indoorFilter === undefined ? 'blue' : 'gray'}
+                  variant={indoorFilter === undefined ? 'solid' : 'outline'}
+                >
+                  전체
+                </Button>
+                <Button
+                  onClick={() => setIndoorFilter(true)}
+                  colorPalette={indoorFilter === true ? 'blue' : 'gray'}
+                  variant={indoorFilter === true ? 'solid' : 'outline'}
+                >
+                  실내
+                </Button>
+                <Button
+                  onClick={() => setIndoorFilter(false)}
+                  colorPalette={indoorFilter === false ? 'blue' : 'gray'}
+                  variant={indoorFilter === false ? 'solid' : 'outline'}
+                >
+                  실외
+                </Button>
+              </ButtonGroup>
+              <CourtList
+                courts={courts}
+                currentMonth={currentMonth}
+                selectedDate={selectedDate}
+              />
             </Box>
           </Flex>
         </Tabs.Content>

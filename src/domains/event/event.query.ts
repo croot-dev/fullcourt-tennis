@@ -337,6 +337,7 @@ export async function getFirstWaiter(
 
 /**
  * 이벤트 현재 참여자 수 업데이트
+ * @deprecated syncEventParticipantCount 사용 권장 (레이스컨디션 방지)
  */
 export async function updateEventCurrentParticipants(
   eventId: number,
@@ -345,6 +346,23 @@ export async function updateEventCurrentParticipants(
   await sql`
     UPDATE events
     SET current_participants = ${count}, updated_at = NOW()
+    WHERE id = ${eventId}
+  `
+}
+
+/**
+ * 이벤트 현재 참여자 수 동기화 (원자적)
+ * JOIN 상태 참여자 수를 서브쿼리로 직접 계산하여 레이스컨디션 방지
+ */
+export async function syncEventParticipantCount(eventId: number): Promise<void> {
+  await sql`
+    UPDATE events
+    SET current_participants = (
+      SELECT COUNT(*)
+      FROM event_participants
+      WHERE event_id = ${eventId} AND status = ${EventParticipantStatus.JOIN}
+    ),
+    updated_at = NOW()
     WHERE id = ${eventId}
   `
 }
