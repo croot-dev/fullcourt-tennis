@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-change-this-in-production'
+  process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
 )
 
 // Edge Runtime 호환: request.cookies 직접 사용 (next/headers 사용 불가)
@@ -35,6 +35,7 @@ export const config = {
     '/member/:path*',
     '/blind/:path*',
     '/schedule/:path*',
+    '/notice/write/:path*',
   ],
 }
 
@@ -57,6 +58,7 @@ export async function middleware(request: NextRequest) {
     // ADMIN이 아니고, 본인 프로필 경로가 아닌 경우에만 리다이렉트
     if (
       session.roleCode !== MEMBER_ROLE.ADMIN &&
+      session.roleCode !== MEMBER_ROLE.OPER &&
       !pathname.startsWith(`/member/${session.memberId}`)
     ) {
       return NextResponse.redirect(

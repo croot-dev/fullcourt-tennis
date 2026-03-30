@@ -24,7 +24,12 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
   const isLoggedIn = useMemo(() => !!user, [user])
-  const isAdmin = useMemo(() => user?.role_code === MEMBER_ROLE.ADMIN, [user])
+  const isOperator = useMemo(
+    () =>
+      user?.role_code === MEMBER_ROLE.ADMIN ||
+      user?.role_code === MEMBER_ROLE.OPER,
+    [user],
+  )
 
   // 로그인 페이지 URL (현재 경로를 redirect_url로 포함)
   const signInUrl = useMemo(() => {
@@ -39,7 +44,7 @@ export default function Header() {
       ? [
           { label: '블라인드', href: '/blind' },
           {
-            ...(isAdmin
+            ...(isOperator
               ? { label: '관리', href: '/management' }
               : { label: '회원', href: '/member' }),
           },

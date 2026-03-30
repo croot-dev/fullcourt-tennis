@@ -11,7 +11,7 @@ import { ErrorCode, ServiceError } from '@/lib/error'
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   return withAuth(req, async () => {
     try {
@@ -21,7 +21,7 @@ export async function GET(
       if (isNaN(courtId)) {
         throw new ServiceError(
           ErrorCode.VALIDATION_ERROR,
-          '유효하지 않은 코트 ID입니다.'
+          '유효하지 않은 코트 ID입니다.',
         )
       }
 
@@ -41,14 +41,17 @@ export async function GET(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   return withAuth(req, async (authenticatedReq, user) => {
     try {
-      if (user.roleCode !== MEMBER_ROLE.ADMIN) {
+      if (
+        user.roleCode !== MEMBER_ROLE.ADMIN &&
+        user.roleCode !== MEMBER_ROLE.OPER
+      ) {
         throw new ServiceError(
           ErrorCode.FORBIDDEN,
-          '코트를 수정할 권한이 없습니다.'
+          '코트를 수정할 권한이 없습니다.',
         )
       }
 
@@ -58,7 +61,7 @@ export async function PUT(
       if (isNaN(courtId)) {
         throw new ServiceError(
           ErrorCode.VALIDATION_ERROR,
-          '유효하지 않은 코트 ID입니다.'
+          '유효하지 않은 코트 ID입니다.',
         )
       }
 
@@ -106,14 +109,14 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   return withAuth(req, async (_authenticatedReq, user) => {
     try {
       if (user.roleCode !== MEMBER_ROLE.ADMIN) {
         throw new ServiceError(
           ErrorCode.FORBIDDEN,
-          '코트를 삭제할 권한이 없습니다.'
+          '코트를 삭제할 권한이 없습니다.',
         )
       }
 
@@ -123,7 +126,7 @@ export async function DELETE(
       if (isNaN(courtId)) {
         throw new ServiceError(
           ErrorCode.VALIDATION_ERROR,
-          '유효하지 않은 코트 ID입니다.'
+          '유효하지 않은 코트 ID입니다.',
         )
       }
 

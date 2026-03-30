@@ -12,7 +12,10 @@ export default async function ManagementLayout({
     redirect('/auth/sign-in')
   }
 
-  if (session.roleCode !== MEMBER_ROLE.ADMIN) {
+  if (
+    session.roleCode !== MEMBER_ROLE.ADMIN &&
+    session.roleCode !== MEMBER_ROLE.OPER
+  ) {
     redirect('/')
   }
 

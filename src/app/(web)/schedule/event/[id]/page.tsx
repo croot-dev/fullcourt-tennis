@@ -48,7 +48,9 @@ export default function EventDetailPage({ params }: PageProps) {
   const isJoined = data?.participants.some(
     (p) => p.member_seq === userInfo?.seq && p.status === 'JOIN',
   )
-  const isAdmin = userInfo?.role_code === MEMBER_ROLE.ADMIN
+  const isOperator =
+    userInfo?.role_code === MEMBER_ROLE.ADMIN ||
+    userInfo?.role_code === MEMBER_ROLE.OPER
   const isEventStarted = data
     ? new Date(data.event.start_datetime) <= new Date()
     : false
@@ -260,7 +262,7 @@ export default function EventDetailPage({ params }: PageProps) {
             목록으로
           </Button>
           <Flex gap={2}>
-            {isAdmin && !isEventStarted && (
+            {isOperator && !isEventStarted && (
               <>
                 <Button
                   colorPalette="red"
@@ -302,7 +304,7 @@ export default function EventDetailPage({ params }: PageProps) {
         </Flex>
       </Stack>
 
-      {isAdmin && (
+      {isOperator && (
         <EventEditDialog
           open={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}

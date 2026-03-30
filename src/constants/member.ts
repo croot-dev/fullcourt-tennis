@@ -17,6 +17,7 @@ export type MemberStatus = (typeof MEMBER_STATUS)[keyof typeof MEMBER_STATUS]
 
 export const MEMBER_ROLE = Object.freeze({
   ADMIN: '0',
+  OPER: '2',
   GUEST: '10',
 } as const)
-export type MemberRole = (typeof MEMBER_STATUS)[keyof typeof MEMBER_STATUS]
+export type MemberRole = (typeof MEMBER_ROLE)[keyof typeof MEMBER_ROLE]

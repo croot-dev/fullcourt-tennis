@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/auth.server'
 import { handleApiError } from '@/lib/api.error'
-import {
-  getEventDetail,
-  modifyEvent,
-  removeEvent,
-} from '@/domains/event'
+import { getEventDetail, modifyEvent, removeEvent } from '@/domains/event'
 import { getMemberById } from '@/domains/member'
 import { MEMBER_ROLE } from '@/constants'
 
@@ -15,7 +11,7 @@ import { MEMBER_ROLE } from '@/constants'
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   return withAuth(req, async () => {
     try {
@@ -25,7 +21,7 @@ export async function GET(
       if (isNaN(eventId)) {
         return NextResponse.json(
           { error: '유효하지 않은 이벤트 ID입니다.' },
-          { status: 400 }
+          { status: 400 },
         )
       }
 
@@ -45,7 +41,7 @@ export async function GET(
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   return withAuth(req, async (authenticatedReq, user) => {
     try {
@@ -55,7 +51,7 @@ export async function PUT(
       if (isNaN(eventId)) {
         return NextResponse.json(
           { error: '유효하지 않은 이벤트 ID입니다.' },
-          { status: 400 }
+          { status: 400 },
         )
       }
 
@@ -75,11 +71,13 @@ export async function PUT(
       if (!member) {
         return NextResponse.json(
           { error: '회원 정보를 찾을 수 없습니다.' },
-          { status: 404 }
+          { status: 404 },
         )
       }
 
-      const isAdmin = user.roleCode === MEMBER_ROLE.ADMIN
+      const isOperator =
+        user.roleCode === MEMBER_ROLE.ADMIN ||
+        user.roleCode === MEMBER_ROLE.OPER
 
       const event = await modifyEvent(
         {
@@ -93,7 +91,7 @@ export async function PUT(
           max_participants,
         },
         member.seq,
-        isAdmin
+        isOperator,
       )
 
       return NextResponse.json(event)
@@ -110,7 +108,7 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   return withAuth(req, async (_, user) => {
     try {
@@ -120,7 +118,7 @@ export async function DELETE(
       if (isNaN(eventId)) {
         return NextResponse.json(
           { error: '유효하지 않은 이벤트 ID입니다.' },
-          { status: 400 }
+          { status: 400 },
         )
       }
 
@@ -129,7 +127,7 @@ export async function DELETE(
       if (!member) {
         return NextResponse.json(
           { error: '회원 정보를 찾을 수 없습니다.' },
-          { status: 404 }
+          { status: 404 },
         )
       }
 

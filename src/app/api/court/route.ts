@@ -16,11 +16,12 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(authenticatedReq.url)
       const { page, limit } = parsePaginationParams(
         searchParams.get('page'),
-        searchParams.get('limit')
+        searchParams.get('limit'),
       )
 
       const isIndoorParam = searchParams.get('isIndoor')
-      const isIndoor = isIndoorParam === null ? undefined : isIndoorParam === 'true'
+      const isIndoor =
+        isIndoorParam === null ? undefined : isIndoorParam === 'true'
 
       const result = await getCourtList(page, limit, isIndoor)
 
@@ -43,10 +44,13 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   return withAuth(req, async (authenticatedReq, user) => {
     try {
-      if (user.roleCode !== MEMBER_ROLE.ADMIN) {
+      if (
+        user.roleCode !== MEMBER_ROLE.ADMIN &&
+        user.roleCode !== MEMBER_ROLE.OPER
+      ) {
         throw new ServiceError(
           ErrorCode.FORBIDDEN,
-          '코트를 생성할 권한이 없습니다.'
+          '코트를 생성할 권한이 없습니다.',
         )
       }
 
