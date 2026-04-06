@@ -21,11 +21,20 @@ interface HeroSectionProps {
 
 export default function HeroSection({ heroEvents }: HeroSectionProps) {
   return (
-    <Box bg="fullcourt.sectionBg" color="fullcourt.text" py={{ base: 16, md: 24 }}>
+    <Box
+      bg="fullcourt.sectionBg"
+      color="fullcourt.text"
+      py={{ base: 16, md: 24 }}
+    >
       <Container maxW="container.xl">
         <SimpleGrid columns={{ base: 1, lg: 2 }} gap={{ base: 8, lg: 16 }}>
           <VStack align="start" gap={6}>
-            <Badge bg="fullcourt.accentBg" color="fullcourt.accentText" px={3} py={1}>
+            <Badge
+              bg="fullcourt.accentBg"
+              color="fullcourt.accentText"
+              px={3}
+              py={1}
+            >
               New Season 2026
             </Badge>
             <Heading
@@ -37,9 +46,13 @@ export default function HeroSection({ heroEvents }: HeroSectionProps) {
               <br />
               풀코트 (Full Court) 테니스 모임
             </Heading>
-            <Text fontSize={{ base: 'md', md: 'xl' }} maxW="xl" color="fullcourt.textSoft">
-              풀코트는 테니스를 막 시작한 테린이들이 함께 배우고, 함께 즐기며
-              꾸준히 성장하는 테니스 모임입니다.
+            <Text
+              fontSize={{ base: 'md', md: 'xl' }}
+              maxW="xl"
+              color="fullcourt.textSoft"
+            >
+              풀코트는 테니스를 막 시작한 20~30대 테린이들이 함께 배우고, 함께
+              즐기며 꾸준히 성장하는 테니스 모임입니다.
             </Text>
             <HStack gap={3} flexWrap="wrap">
               <Link href="/schedule">
@@ -81,7 +94,12 @@ export default function HeroSection({ heroEvents }: HeroSectionProps) {
                   </Text>
                 )}
                 {heroEvents.map((event) => (
-                  <Box key={event.id} bg="fullcourt.sectionBg" p={4} borderRadius="md">
+                  <Box
+                    key={event.id}
+                    bg="fullcourt.sectionBg"
+                    p={4}
+                    borderRadius="md"
+                  >
                     <HStack justify="space-between" mb={2}>
                       <Text fontWeight="bold">
                         {formatDate(event.start_datetime)}

@@ -1,11 +1,21 @@
 import { Box, Button, Card, Heading, HStack, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import Link from 'next/link'
 import { FaChevronRight } from 'react-icons/fa'
+import Image from 'next/image'
 import type { PostListItem } from '@/domains/post'
 
 interface CommunityNoticeSectionProps {
   notices: PostListItem[]
 }
+
+const communityImages = [
+  '/images/community_1.jpg',
+  '/images/community_2.jpg',
+  '/images/community_3.jpg',
+  '/images/community_4.jpg',
+  '/images/community_5.jpg',
+  '/images/community_6.jpg',
+] as const
 
 export default function CommunityNoticeSection({ notices }: CommunityNoticeSectionProps) {
   return (
@@ -16,8 +26,16 @@ export default function CommunityNoticeSection({ notices }: CommunityNoticeSecti
         </Card.Header>
         <Card.Body>
           <SimpleGrid columns={3} gap={3} mb={4}>
-            {['A', 'B', 'C', 'D', 'E', 'F'].map((photo) => (
-              <Box key={photo} h="80px" borderRadius="md" bg="fullcourt.sectionBg" border="1px solid" borderColor="fullcourt.border" />
+            {communityImages.map((src, index) => (
+              <Box key={src} aspectRatio={1} borderRadius="md" overflow="hidden" position="relative">
+                <Image
+                  src={src}
+                  alt={`커뮤니티 활동 사진 ${index + 1}`}
+                  fill
+                  sizes="(max-width: 768px) 30vw, 140px"
+                  style={{ objectFit: 'cover' }}
+                />
+              </Box>
             ))}
           </SimpleGrid>
           <Text color="gray.700" mb={2}>
