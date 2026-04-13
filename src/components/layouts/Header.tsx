@@ -28,7 +28,7 @@ export default function Header() {
     () =>
       user?.role_code === MEMBER_ROLE.ADMIN ||
       user?.role_code === MEMBER_ROLE.OPER,
-    [user],
+    [user]
   )
 
   // 로그인 페이지 URL (현재 경로를 redirect_url로 포함)
@@ -42,6 +42,7 @@ export default function Header() {
     { label: '공지사항', href: '/notice' },
     ...(!!isLoggedIn
       ? [
+          { label: '커뮤니티', href: '/community' },
           { label: '블라인드', href: '/blind' },
           {
             ...(isOperator
