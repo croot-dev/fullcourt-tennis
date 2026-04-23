@@ -105,7 +105,7 @@ PR 생성/수정 시 GitHub Actions에서 AI 코드리뷰가 자동으로 실행
 
 - `.github/workflows/ai-code-review.yml`
 - `.github/scripts/ai-pr-review.mjs`
-- `.github/ai-review/commit-message-template.md`
+- `.gitmessage.txt`
 - `.github/ai-review/review-rules.md`
 
 ---

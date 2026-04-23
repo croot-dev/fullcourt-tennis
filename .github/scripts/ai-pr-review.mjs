@@ -89,10 +89,7 @@ async function main() {
   const diff = run(`git diff --unified=3 ${baseSha}...${headSha}`)
 
   const conventions = readFileIfExists('CONVENSIONS.md', 'CONVENSIONS.md not found')
-  const commitTemplate = readFileIfExists(
-    '.github/ai-review/commit-message-template.md',
-    'commit template not found',
-  )
+  const commitTemplate = readFileIfExists('.gitmessage.txt', 'commit template not found')
   const reviewRules = readFileIfExists('.github/ai-review/review-rules.md', 'review rules not found')
   const lintResult = readFileIfExists('.github/artifacts/lint.txt', 'lint result not found')
   const auditSummary = readFileIfExists(
