@@ -13,6 +13,8 @@ jobs:
   ai-review:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
     steps:
       - name: Checkout
@@ -86,7 +88,7 @@ jobs:
           "
 
       - name: Run AI PR review and post comment
-        if: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        if: env.ANTHROPIC_API_KEY != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -94,6 +96,6 @@ jobs:
         run: node .github/scripts/ai-pr-review.mjs
 
       - name: Warn if ANTHROPIC_API_KEY is missing
-        if: ${{ secrets.ANTHROPIC_API_KEY == '' }}
+        if: env.ANTHROPIC_API_KEY == ''
         run: |
           echo "::warning::ANTHROPIC_API_KEY secret is not configured. AI review step was skipped."
