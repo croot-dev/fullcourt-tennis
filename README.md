@@ -84,6 +84,32 @@ netlify deploy --prod
 
 ---
 
+## AI 코드리뷰 자동화
+
+PR 생성/수정 시 GitHub Actions에서 AI 코드리뷰가 자동으로 실행됩니다.
+
+### 점검 항목
+
+- 커밋 메시지 템플릿 적합성
+- 코딩 컨벤션 준수 여부 (`CONVENSIONS.md` 기준)
+- 보안 점검 (`npm audit` 결과 포함)
+- 성능 점검 (변경 코드 기준 정적 리뷰)
+
+### 설정 방법
+
+1. GitHub 저장소 `Settings > Secrets and variables > Actions`에서 `ANTHROPIC_API_KEY` 시크릿을 추가합니다.
+2. PR을 생성하거나 업데이트하면 `.github/workflows/ai-code-review.yml`가 실행됩니다.
+3. 리뷰 결과는 PR 코멘트에 `<!-- ai-pr-review -->` 마커로 자동 생성/갱신됩니다.
+
+### 관련 파일
+
+- `.github/workflows/ai-code-review.yml`
+- `.github/scripts/ai-pr-review.mjs`
+- `.github/ai-review/commit-message-template.md`
+- `.github/ai-review/review-rules.md`
+
+---
+
 ## 디렉토리 구조
 
 ```
