@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { request } from '@/lib/api.client'
+import { useRouter } from 'next/navigation'
 import type {
   Event,
   EventWithHost,
@@ -109,6 +110,7 @@ export interface CreateEventInput {
  */
 export function useCreateEvent() {
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   return useMutation({
     mutationFn: (data: CreateEventInput) =>
@@ -118,6 +120,7 @@ export function useCreateEvent() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: eventKeys.list() })
+      router.refresh()
     },
   })
 }
@@ -127,6 +130,7 @@ export function useCreateEvent() {
  */
 export function useUpdateEvent() {
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   return useMutation({
     mutationFn: ({ id, ...data }: CreateEventInput & { id: number }) =>
@@ -136,6 +140,7 @@ export function useUpdateEvent() {
       }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: eventKeys.list() })
+      router.refresh()
       queryClient.invalidateQueries({
         queryKey: eventKeys.detail(variables.id),
       })
@@ -148,12 +153,14 @@ export function useUpdateEvent() {
  */
 export function useDeleteEvent() {
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   return useMutation({
     mutationFn: (id: number) =>
       request(`/api/event/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: eventKeys.list() })
+      router.refresh()
     },
   })
 }

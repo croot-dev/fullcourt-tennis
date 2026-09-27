@@ -18,6 +18,8 @@ import {
 } from './event.model'
 import {
   findEventList,
+  findUpcomingEvents,
+  saveEvents,
   findEventById,
   createEvent,
   updateEvent,
@@ -60,6 +62,11 @@ export async function getEventList(
   filter?: EventListFilter,
 ): Promise<EventListResult> {
   return await findEventList(page, limit, filter)
+}
+
+export async function getUpcomingEvents(limit: number = 2) {
+  const safeLimit = Number.isInteger(limit) && limit >= 1 && limit <= 100 ? limit : 2
+  return findUpcomingEvents(safeLimit)
 }
 
 /**
@@ -530,4 +537,28 @@ export async function getMyEvents(
   limit: number = 5
 ) {
   return await findMyEvents(memberSeq, limit)
+}
+
+/** 목록을 모두 검증한 뒤 한 번에 저장한다. */
+export async function writeEvents(data: CreateEventDto[]): Promise<Event[]> {
+  if (!Array.isArray(data) || data.length < 1 || data.length > 100) {
+    throw new ServiceError(ErrorCode.INVALID_INPUT, '한 번에 1~100개 일정을 등록해주세요.')
+  }
+  const keys = new Set<string>()
+  for (const event of data) {
+    const start = new Date(event.start_datetime).getTime()
+    const end = new Date(event.end_datetime).getTime()
+    if (!event.title?.trim() || event.title.length > 100 || (event.location_name?.length ?? 0) > 100 ||
+        !Number.isFinite(start) || !Number.isFinite(end) || end <= start ||
+        !Number.isInteger(event.max_participants) || event.max_participants < 1 ||
+        !Number.isSafeInteger(event.host_member_seq) || event.host_member_seq < 1) {
+      throw new ServiceError(ErrorCode.INVALID_INPUT, '일정의 제목, 장소, 시간 또는 인원을 확인해주세요.')
+    }
+    const key = `${start}|${event.location_name?.replace(/\s/g, '')}`
+    if (keys.has(key)) {
+      throw new ServiceError(ErrorCode.INVALID_INPUT, '목록에 같은 시간·코트의 일정이 중복되어 있습니다.')
+    }
+    keys.add(key)
+  }
+  return saveEvents(data)
 }

@@ -1,5 +1,3 @@
-import type { EventWithHost } from '@/domains/event/event.model'
-
 export function formatDate(value: string) {
   return new Date(value).toLocaleDateString('ko-KR', {
     month: 'numeric',
@@ -19,17 +17,4 @@ export function formatTimeRange(start: string, end: string) {
     })
 
   return `${format(start)} - ${format(end)}`
-}
-
-export function getUpcomingEvents(events: EventWithHost[], take: number) {
-  const now = Date.now()
-
-  return events
-    .filter((event) => new Date(event.end_datetime).getTime() >= now)
-    .sort(
-      (a, b) =>
-        new Date(a.start_datetime).getTime() -
-        new Date(b.start_datetime).getTime(),
-    )
-    .slice(0, take)
 }

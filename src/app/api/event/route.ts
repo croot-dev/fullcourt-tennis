@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { withAuth } from '@/lib/auth.server'
 import { handleApiError } from '@/lib/api.error'
 import { getEventList, writeEvent } from '@/domains/event'
@@ -78,6 +79,9 @@ export async function POST(req: NextRequest) {
         max_participants,
         host_member_seq: member.seq,
       })
+
+      revalidatePath('/')
+      revalidatePath('/schedule')
 
       return NextResponse.json(event, { status: 201 })
     } catch (error) {

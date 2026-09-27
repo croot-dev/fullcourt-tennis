@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { withAuth } from '@/lib/auth.server'
 import { handleApiError } from '@/lib/api.error'
 import { getEventDetail, modifyEvent, removeEvent } from '@/domains/event'
@@ -94,6 +95,9 @@ export async function PUT(
         isOperator,
       )
 
+      revalidatePath('/')
+      revalidatePath('/schedule')
+
       return NextResponse.json(event)
     } catch (error) {
       console.error('이벤트 수정 에러:', error)
@@ -132,6 +136,9 @@ export async function DELETE(
       }
 
       await removeEvent(eventId, member.seq)
+
+      revalidatePath('/')
+      revalidatePath('/schedule')
 
       return NextResponse.json({ success: true })
     } catch (error) {

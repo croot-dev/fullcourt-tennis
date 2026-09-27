@@ -6,6 +6,7 @@
 import 'server-only'
 import {
   getPostList as getPostListQuery,
+  selectRecentPosts,
   getPost as getPostQuery,
   createPost as createPostQuery,
   updatePost as updatePostQuery,
@@ -25,6 +26,10 @@ export async function findPostList(
   filter?: PostListFilter
 ): Promise<ResponseList<PostListItem>> {
   return getPostListQuery(bbs_type_id, page, limit, filter)
+}
+
+export async function findRecentPosts(bbsTypeId: number, limit: number) {
+  return selectRecentPosts(bbsTypeId, limit)
 }
 
 /**

@@ -6,6 +6,7 @@
 import 'server-only'
 import {
   findPostList,
+  findRecentPosts,
   findPostById,
   createPost,
   updatePost,
@@ -28,6 +29,11 @@ export async function getPostList(
   if (limit < 1 || limit > 100) limit = 10
 
   return await findPostList(bbs_type_id, page, limit)
+}
+
+export async function getRecentPosts(bbsTypeId: number, limit: number = 3) {
+  const safeLimit = Number.isInteger(limit) && limit >= 1 && limit <= 100 ? limit : 3
+  return findRecentPosts(bbsTypeId, safeLimit)
 }
 
 /**

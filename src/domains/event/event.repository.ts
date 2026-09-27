@@ -6,6 +6,8 @@
 import 'server-only'
 import {
   type EventListFilter,
+  selectUpcomingEvents,
+  insertEvents,
   getEventList as getEventListQuery,
   getEventById as getEventByIdQuery,
   createEvent as createEventQuery,
@@ -55,6 +57,10 @@ export async function findEventList(
   filter?: EventListFilter,
 ): Promise<EventListResult> {
   return getEventListQuery(page, limit, filter)
+}
+
+export async function findUpcomingEvents(limit: number): Promise<EventWithHost[]> {
+  return selectUpcomingEvents(limit)
 }
 
 /**
@@ -260,4 +266,8 @@ export async function findMyEvents(
   limit: number = 5,
 ): Promise<EventWithHost[]> {
   return getMyEventsQuery(memberSeq, limit)
+}
+
+export async function saveEvents(data: CreateEventDto[]): Promise<Event[]> {
+  return insertEvents(data)
 }

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:benchmark": "node scripts/db-performance.mjs",
+    "db:check": "node scripts/db-query-check.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.73.0",
