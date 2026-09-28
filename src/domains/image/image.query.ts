@@ -88,3 +88,21 @@ export async function deletePostImagesByKeys(
     WHERE image_key = ANY(${imageKeys}::text[])
   `
 }
+
+/**
+ * 게시판의 최신 게시글 이미지 조회 (삭제된 글 제외)
+ */
+export async function selectRecentPostImages(
+  bbsTypeId: number,
+  limit: number
+): Promise<{ image_key: string; post_id: number }[]> {
+  return (await sql`
+    SELECT i.image_key, i.post_id
+    FROM bbs_post_image i
+    JOIN bbs_post p ON p.post_id = i.post_id
+    WHERE p.bbs_type_id = ${bbsTypeId}
+      AND p.deleted_at IS NULL
+    ORDER BY p.created_at DESC, i.created_at ASC
+    LIMIT ${limit}
+  `) as { image_key: string; post_id: number }[]
+}

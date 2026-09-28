@@ -5,13 +5,14 @@
 
 import 'server-only'
 import { getPostImageStore } from '@/lib/blob.server'
-import { StoredImage } from './image.model'
+import { StoredImage, RecentPostImageDto, toImageUrl } from './image.model'
 import {
   insertPostImage,
   updatePostIdByImageKeys,
   updatePostIdToNullExceptImageKeys,
   selectExpiredImageKeys,
   deletePostImagesByKeys,
+  selectRecentPostImages,
 } from './image.query'
 
 export async function saveImage(
@@ -69,4 +70,15 @@ export async function deleteImages(keys: string[]): Promise<void> {
   const store = getPostImageStore()
   await Promise.all(keys.map((key) => store.delete(key)))
   await deletePostImagesByKeys(keys)
+}
+
+export async function findRecentPostImages(
+  bbsTypeId: number,
+  limit: number
+): Promise<RecentPostImageDto[]> {
+  const rows = await selectRecentPostImages(bbsTypeId, limit)
+  return rows.map((row) => ({
+    post_id: Number(row.post_id),
+    url: toImageUrl(row.image_key),
+  }))
 }

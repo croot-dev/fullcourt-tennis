@@ -30,6 +30,11 @@ export interface UploadedImageDto {
   url: string
 }
 
+export interface RecentPostImageDto {
+  post_id: number
+  url: string
+}
+
 export function toImageUrl(key: string): string {
   return `${IMAGE_URL_PREFIX}${key}`
 }

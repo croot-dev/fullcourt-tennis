@@ -11,6 +11,7 @@ import {
   updatePostIdByContentImageKeys,
   findExpiredImageKeys,
   deleteImages,
+  findRecentPostImages,
 } from './image.repository'
 import {
   IMAGE_CONTENT_TYPES,
@@ -20,6 +21,7 @@ import {
   ImageExtension,
   StoredImage,
   UploadedImageDto,
+  RecentPostImageDto,
   toImageUrl,
 } from './image.model'
 import { ServiceError, ErrorCode } from '@/lib/error'
@@ -100,6 +102,18 @@ export async function getPostImage(key: string): Promise<StoredImage | null> {
   }
 
   return findImageByKey(key)
+}
+
+/**
+ * 게시판 최신 이미지 조회 (홈 커뮤니티 미리보기용)
+ */
+export async function getRecentPostImages(
+  bbsTypeId: number,
+  limit: number = 6
+): Promise<RecentPostImageDto[]> {
+  const safeLimit =
+    Number.isInteger(limit) && limit >= 1 && limit <= 30 ? limit : 6
+  return findRecentPostImages(bbsTypeId, safeLimit)
 }
 
 // 연결되지 않은 이미지(작성 취소, 본문에서 제거)는 하루 뒤 정리
