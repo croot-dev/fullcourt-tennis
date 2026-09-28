@@ -19,7 +19,7 @@ export async function getPostList(
   const offset = (page - 1) * limit
   const conditions = [
     sql`bbs_type_id = ${bbs_type_id}`,
-    sql`deleted_at IS NULL`,
+    sql`p.deleted_at IS NULL`,
     sql`(display_start_at IS NULL OR display_start_at <= NOW())`,
     sql`(display_end_at IS NULL OR display_end_at >= NOW())`,
   ]
