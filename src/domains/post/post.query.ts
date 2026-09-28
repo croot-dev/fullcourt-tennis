@@ -57,6 +57,26 @@ export async function getPostList(
   }
 }
 
+/** 홈의 최신 게시글 미리보기 (페이지 수가 필요하지 않으므로 COUNT 생략). */
+export async function selectRecentPosts(
+  bbsTypeId: number,
+  limit: number,
+): Promise<PostListItem[]> {
+  return (await sql`
+    SELECT
+      p.post_id, p.bbs_type_id, p.title, p.writer_seq,
+      p.view_count, p.created_at, p.updated_at,
+      m.nickname AS writer_name
+    FROM bbs_post p
+    LEFT JOIN member m ON p.writer_seq = m.seq
+    WHERE p.bbs_type_id = ${bbsTypeId}
+      AND (p.display_start_at IS NULL OR p.display_start_at <= NOW())
+      AND (p.display_end_at IS NULL OR p.display_end_at >= NOW())
+    ORDER BY p.created_at DESC, p.post_id DESC
+    LIMIT ${limit}
+  `) as PostListItem[]
+}
+
 /**
  * 단일 게시글 조회
  */

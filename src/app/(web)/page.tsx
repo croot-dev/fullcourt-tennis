@@ -1,26 +1,21 @@
 import { Box, Container, Stack } from '@chakra-ui/react'
 import { BBS_TYPE } from '@/constants'
-import { getEventList } from '@/domains/event'
-import type { EventWithHost } from '@/domains/event/event.model'
-import { getPostList } from '@/domains/post'
-import type { PostListItem } from '@/domains/post'
+import { getUpcomingEvents } from '@/domains/event'
+import { getRecentPosts } from '@/domains/post'
 import BottomCtaSection from './_components/BottomCtaSection'
 import CommunityNoticeSection from './_components/CommunityNoticeSection'
 import FaqSection from './_components/FaqSection'
 import HeroSection from './_components/HeroSection'
 import IntroGuideSection from './_components/IntroGuideSection'
-import { getUpcomingEvents } from './_components/home.utils'
+
+// 다음 일정은 현재 시각과 등록 내용에 따라 달라지므로 요청마다 조회한다.
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  const [eventResult, noticeResult] = await Promise.all([
-    getEventList(1, 100),
-    getPostList(BBS_TYPE.NOTICE, 1, 3),
+  const [heroEvents, notices] = await Promise.all([
+    getUpcomingEvents(2),
+    getRecentPosts(BBS_TYPE.NOTICE, 3),
   ])
-
-  const events: EventWithHost[] = eventResult.events
-  const notices: PostListItem[] = noticeResult.list
-
-  const heroEvents = getUpcomingEvents(events, 2)
 
   return (
     <Box bg="fullcourt.pageBg">

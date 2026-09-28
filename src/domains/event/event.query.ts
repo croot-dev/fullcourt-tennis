@@ -97,6 +97,20 @@ export async function getEventList(
   }
 }
 
+/** 홈에 표시할 진행 중 / 예정 일정만 조회 (전체 건수 조회 없음). */
+export async function selectUpcomingEvents(
+  limit: number,
+): Promise<EventWithHost[]> {
+  return (await sql`
+    SELECT e.*, m.name AS host_name, m.nickname AS host_nickname
+    FROM events e
+    JOIN member m ON e.host_member_seq = m.seq
+    WHERE e.end_datetime >= NOW()
+    ORDER BY e.start_datetime ASC, e.id ASC
+    LIMIT ${limit}
+  `) as EventWithHost[]
+}
+
 /**
  * 이벤트 단건 조회
  */
@@ -160,6 +174,24 @@ export async function createEvent(data: CreateEventDto): Promise<Event> {
   `) as Event[]
 
   return result[0]
+}
+
+/** 한 SQL 문장으로 일괄 생성해 중간 실패 시 일부 일정만 저장되는 것을 방지한다. */
+export async function insertEvents(data: CreateEventDto[]): Promise<Event[]> {
+  return (await sql`
+    INSERT INTO events (
+      title, description, start_datetime, end_datetime, location_name,
+      location_url, max_participants, current_participants, host_member_seq
+    )
+    SELECT title, description, start_datetime, end_datetime, location_name,
+      location_url, max_participants, 0, host_member_seq
+    FROM jsonb_to_recordset(${JSON.stringify(data)}::jsonb) AS input(
+      title text, description text, start_datetime timestamptz,
+      end_datetime timestamptz, location_name text, location_url text,
+      max_participants integer, host_member_seq bigint
+    )
+    RETURNING *
+  `) as Event[]
 }
 
 /**
