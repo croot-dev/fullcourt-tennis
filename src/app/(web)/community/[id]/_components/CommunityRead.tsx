@@ -61,6 +61,7 @@ export default async function CommunityRead({ postId }: CommunityReadProps) {
             '& p': { marginBottom: '1em' },
             '& ul, & ol': { marginLeft: '1.5em', marginBottom: '1em' },
             '& h1, & h2, & h3': { fontWeight: 'bold', marginBottom: '0.5em' },
+            '& img': { maxWidth: '100%', height: 'auto', borderRadius: '4px' },
           }}
         />
       </Field.Root>
@@ -71,7 +72,7 @@ export default async function CommunityRead({ postId }: CommunityReadProps) {
           <Button variant="outline">목록으로</Button>
         </Link>
 
-        <NoticeActions postId={post.post_id} writerId={post.writer_seq} />
+        <CommunityActions postId={post.post_id} writerId={post.writer_seq} />
       </Box>
     </Stack>
   )

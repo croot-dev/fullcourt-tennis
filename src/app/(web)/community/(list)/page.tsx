@@ -29,7 +29,7 @@ function CommunityListFallback() {
   )
 }
 
-export default async function NoticeListPage({ searchParams }: PageProps) {
+export default async function CommunityListPage({ searchParams }: PageProps) {
   const params = await searchParams
   const currentPage = Number(params.page) || 1
 

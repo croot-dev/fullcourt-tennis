@@ -2,6 +2,7 @@ import { Box, Container, Stack } from '@chakra-ui/react'
 import { BBS_TYPE } from '@/constants'
 import { getUpcomingEvents } from '@/domains/event'
 import { getRecentPosts } from '@/domains/post'
+import { getRecentPostImages } from '@/domains/image'
 import BottomCtaSection from './_components/BottomCtaSection'
 import CommunityNoticeSection from './_components/CommunityNoticeSection'
 import FaqSection from './_components/FaqSection'
@@ -12,10 +13,13 @@ import IntroGuideSection from './_components/IntroGuideSection'
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  const [heroEvents, notices] = await Promise.all([
-    getUpcomingEvents(2),
-    getRecentPosts(BBS_TYPE.NOTICE, 3),
-  ])
+  const [heroEvents, notices, communityPosts, communityImages] =
+    await Promise.all([
+      getUpcomingEvents(2),
+      getRecentPosts(BBS_TYPE.NOTICE, 3),
+      getRecentPosts(BBS_TYPE.COMMUNITY, 3),
+      getRecentPostImages(BBS_TYPE.COMMUNITY, 6),
+    ])
 
   return (
     <Box bg="fullcourt.pageBg">
@@ -24,7 +28,11 @@ export default async function Home() {
       <Container maxW="container.xl" py={{ base: 12, md: 16 }}>
         <Stack gap={14}>
           <IntroGuideSection />
-          <CommunityNoticeSection notices={notices} />
+          <CommunityNoticeSection
+            notices={notices}
+            communityPosts={communityPosts}
+            communityImages={communityImages}
+          />
           <FaqSection />
         </Stack>
       </Container>

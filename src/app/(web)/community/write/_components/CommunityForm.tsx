@@ -8,7 +8,7 @@ import { useCreatePost, useUpdatePost } from '@/hooks/usePosts'
 import { BBS_TYPE } from '@/constants'
 
 // Quill 에디터를 동적으로 로드 (SSR 방지)
-const QuillEditor = dynamic(() => import('./QuillEditor'), {
+const QuillEditor = dynamic(() => import('@/components/common/QuillEditor'), {
   ssr: false,
   loading: () => <Box minH="300px" bg="gray.100" borderRadius="md" />,
 })
@@ -33,9 +33,15 @@ export default function CommunityForm({
   const [title, setTitle] = useState(initialTitle)
   const [content, setContent] = useState(initialContent)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (isUploading) {
+      alert('이미지 업로드가 끝난 뒤 다시 시도해주세요.')
+      return
+    }
 
     if (!title.trim() || !content.trim()) {
       alert('제목과 내용을 입력해주세요.')
@@ -109,6 +115,7 @@ export default function CommunityForm({
           <QuillEditor
             value={content}
             onChange={setContent}
+            onUploadingChange={setIsUploading}
             placeholder="내용을 입력하세요..."
           />
         </Field.Root>
@@ -126,7 +133,7 @@ export default function CommunityForm({
             type="submit"
             colorScheme="teal"
             loading={isSubmitting}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isUploading}
           >
             {mode === 'edit' ? '수정하기' : '작성하기'}
           </Button>

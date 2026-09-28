@@ -61,6 +61,7 @@ export default async function NoticeRead({ postId }: NoticeReadProps) {
             '& p': { marginBottom: '1em' },
             '& ul, & ol': { marginLeft: '1.5em', marginBottom: '1em' },
             '& h1, & h2, & h3': { fontWeight: 'bold', marginBottom: '0.5em' },
+            '& img': { maxWidth: '100%', height: 'auto', borderRadius: '4px' },
           }}
         />
       </Field.Root>

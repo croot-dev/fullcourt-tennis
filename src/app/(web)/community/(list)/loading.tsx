@@ -1,6 +1,6 @@
 import { Box, Container, Heading, Stack, Skeleton } from '@chakra-ui/react'
 
-export default function NoticeListLoading() {
+export default function CommunityListLoading() {
   return (
     <Container maxW="container.xl" py={10}>
       <Stack gap={6}>

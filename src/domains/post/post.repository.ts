@@ -13,7 +13,7 @@ import {
   deletePost as deletePostQuery,
   incrementViewCount as incrementViewCountQuery,
 } from './post.query'
-import { PostListItem, PostListFilter, PostDto, CreatePostDto } from './post.model'
+import { PostListItem, PostDto, CreatePostDto } from './post.model'
 import { ResponseList } from '../common/response.query'
 
 /**
@@ -22,10 +22,9 @@ import { ResponseList } from '../common/response.query'
 export async function findPostList(
   bbs_type_id: number = 1,
   page: number = 1,
-  limit: number = 10,
-  filter?: PostListFilter
+  limit: number = 10
 ): Promise<ResponseList<PostListItem>> {
-  return getPostListQuery(bbs_type_id, page, limit, filter)
+  return getPostListQuery(bbs_type_id, page, limit)
 }
 
 export async function findRecentPosts(bbsTypeId: number, limit: number) {

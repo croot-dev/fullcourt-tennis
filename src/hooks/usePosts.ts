@@ -98,6 +98,11 @@ export function useUpdatePost() {
   })
 }
 
+interface DeletePostInput {
+  id: number
+  bbsTypeId: number
+}
+
 /**
  * 게시글 삭제 mutation
  */
@@ -105,9 +110,12 @@ export function useDeletePost() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: number) =>
-      request<{ success: boolean }>(`/api/bbs/post/${id}`),
-    onSuccess: () => {
+    mutationFn: ({ id, bbsTypeId }: DeletePostInput) =>
+      request<boolean>(`/api/bbs/post/${id}?type=${bbsTypeId}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.removeQueries({ queryKey: postKeys.detail(variables.id) })
       queryClient.invalidateQueries({ queryKey: postKeys.lists() })
     },
   })
