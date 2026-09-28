@@ -35,7 +35,7 @@ export default async function CommunityList({
             {posts.map((post, index) => (
               <Link
                 key={post.post_id}
-                href={`/notice/${post.post_id}`}
+                href={`/community/${post.post_id}`}
                 style={{ textDecoration: 'none' }}
               >
                 <Box
@@ -123,7 +123,7 @@ export default async function CommunityList({
                   </Table.Cell>
                   <Table.Cell>
                     <Link
-                      href={`/notice/${post.post_id}`}
+                      href={`/community/${post.post_id}`}
                       style={{ color: 'inherit', textDecoration: 'none' }}
                     >
                       <Box
@@ -159,7 +159,7 @@ export default async function CommunityList({
           flexWrap="wrap"
         >
           {currentPage > 1 && (
-            <Link href={`/notice?page=${currentPage - 1}`}>
+            <Link href={`/community?page=${currentPage - 1}`}>
               <Box
                 as="button"
                 px={{ base: 3, md: 4 }}
@@ -177,7 +177,7 @@ export default async function CommunityList({
 
           {Array.from({ length: totalPages }, (_, i) => i + 1).map(
             (pageNum) => (
-              <Link key={pageNum} href={`/notice?page=${pageNum}`}>
+              <Link key={pageNum} href={`/community?page=${pageNum}`}>
                 <Box
                   as="button"
                   px={{ base: 3, md: 4 }}
@@ -202,7 +202,7 @@ export default async function CommunityList({
           )}
 
           {currentPage < totalPages && (
-            <Link href={`/notice?page=${currentPage + 1}`}>
+            <Link href={`/community?page=${currentPage + 1}`}>
               <Box
                 as="button"
                 px={{ base: 3, md: 4 }}

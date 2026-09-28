@@ -41,7 +41,7 @@ function CommunityReadFallback() {
   )
 }
 
-export default async function NoticeReadPage({ params }: PageProps) {
+export default async function CommunityReadPage({ params }: PageProps) {
   const { id } = await params
   const postId = parseInt(id)
 

@@ -1,10 +1,10 @@
 import { Box, Container, Heading, Stack, Skeleton } from '@chakra-ui/react'
 
-export default function NoticeWriteLoading() {
+export default function CommunityWriteLoading() {
   return (
     <Container maxW="container.lg" py={10}>
       <Stack gap={8}>
-        <Heading size="2xl">공지사항 작성</Heading>
+        <Heading size="2xl">커뮤니티 작성</Heading>
 
         <Stack gap={6}>
           <Box>

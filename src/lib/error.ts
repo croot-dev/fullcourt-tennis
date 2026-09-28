@@ -39,6 +39,9 @@ export const ErrorCode = {
   INVALID_INPUT: 'INVALID_INPUT',
   MISSING_REQUIRED_FIELD: 'MISSING_REQUIRED_FIELD',
 
+  // 요청 제한 (429)
+  TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
+
   // 서버 에러 (500)
   INTERNAL_ERROR: 'INTERNAL_ERROR',
 } as const
@@ -80,6 +83,9 @@ const errorStatusMap: Record<ErrorCodeType, number> = {
   [ErrorCode.VALIDATION_ERROR]: 400,
   [ErrorCode.INVALID_INPUT]: 400,
   [ErrorCode.MISSING_REQUIRED_FIELD]: 400,
+
+  // 429
+  [ErrorCode.TOO_MANY_REQUESTS]: 429,
 
   // 500
   [ErrorCode.INTERNAL_ERROR]: 500,

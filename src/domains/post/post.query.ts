@@ -19,6 +19,7 @@ export async function getPostList(
   const offset = (page - 1) * limit
   const conditions = [
     sql`bbs_type_id = ${bbs_type_id}`,
+    sql`deleted_at IS NULL`,
     sql`(display_start_at IS NULL OR display_start_at <= NOW())`,
     sql`(display_end_at IS NULL OR display_end_at >= NOW())`,
   ]
@@ -70,6 +71,7 @@ export async function selectRecentPosts(
     FROM bbs_post p
     LEFT JOIN member m ON p.writer_seq = m.seq
     WHERE p.bbs_type_id = ${bbsTypeId}
+      AND p.deleted_at IS NULL
       AND (p.display_start_at IS NULL OR p.display_start_at <= NOW())
       AND (p.display_end_at IS NULL OR p.display_end_at >= NOW())
     ORDER BY p.created_at DESC, p.post_id DESC
@@ -98,8 +100,9 @@ export async function getPost(
     FROM bbs_post p
       LEFT JOIN member m
         ON p.writer_seq = m.seq
-    WHERE post_id = ${post_id} 
+    WHERE post_id = ${post_id}
       AND bbs_type_id = ${bbs_type_id}
+      AND p.deleted_at IS NULL
   `) as PostListItem[]
 
   return result[0] || null
@@ -151,6 +154,7 @@ export async function updatePost(
       content = ${content.trim()},
       updated_at = NOW()
     WHERE post_id = ${post_id} AND bbs_type_id = ${bbs_type_id}
+      AND deleted_at IS NULL
     RETURNING post_id, bbs_type_id, title, content, writer_seq, view_count, created_at, updated_at
   `) as PostDto[]
 
@@ -158,15 +162,17 @@ export async function updatePost(
 }
 
 /**
- * 게시글 삭제
+ * 게시글 삭제 (소프트 삭제: deleted_at 기록)
  */
 export async function deletePost(
   post_id: number,
   bbs_type_id: number
 ): Promise<boolean> {
   const result = await sql`
-    DELETE FROM bbs_post
+    UPDATE bbs_post
+    SET deleted_at = NOW()
     WHERE post_id = ${post_id} AND bbs_type_id = ${bbs_type_id}
+      AND deleted_at IS NULL
     RETURNING post_id
   `
 
@@ -184,5 +190,6 @@ export async function incrementViewCount(
     UPDATE bbs_post
     SET view_count = view_count + 1
     WHERE post_id = ${post_id} AND bbs_type_id = ${bbs_type_id}
+      AND deleted_at IS NULL
   `
 }

@@ -15,6 +15,21 @@ import {
 } from './post.repository'
 import { CreatePostDto, PostDto } from './post.model'
 import { ServiceError, ErrorCode } from '@/lib/error'
+import { sanitizePostContent } from '@/lib/sanitize.server'
+import { assignPostImages } from '@/domains/image'
+
+/**
+ * 본문 이미지 연결
+ * 실패해도 게시글 저장은 성공 처리 (재시도로 인한 중복 게시 방지)
+ * 정리 작업은 본문에 남아 있는 이미지를 지우지 않으므로 연결 누락은 안전하다
+ */
+async function syncPostImages(postId: number, content: string): Promise<void> {
+  try {
+    await assignPostImages(postId, content)
+  } catch (error) {
+    console.error('게시글 이미지 연결 에러:', { postId, error })
+  }
+}
 
 /**
  * 게시글 목록 조회
@@ -44,14 +59,19 @@ export async function getPostById(post_id: number, bbs_type_id: number = 1) {
     return null
   }
 
-  return await findPostById(post_id, bbs_type_id)
+  const post = await findPostById(post_id, bbs_type_id)
+  if (!post) return post
+
+  // 과거에 sanitize 없이 저장된 본문도 안전하게 반환
+  return { ...post, content: sanitizePostContent(post.content ?? '') }
 }
 
 /**
  * 게시글 생성
  */
 export async function writePost(data: CreatePostDto) {
-  const { bbs_type_id, title, content, writer_seq } = data
+  const { bbs_type_id, title, writer_seq } = data
+  const content = sanitizePostContent(data.content ?? '')
 
   // 유효성 검증
   if (!title || title.trim().length === 0) {
@@ -66,7 +86,9 @@ export async function writePost(data: CreatePostDto) {
     throw new ServiceError(ErrorCode.UNAUTHORIZED, '작성자 정보가 필요합니다.')
   }
 
-  return createPost({ bbs_type_id, title, content, writer_seq })
+  const post = await createPost({ bbs_type_id, title, content, writer_seq })
+  await syncPostImages(post.post_id, content)
+  return post
 }
 
 /**
@@ -81,7 +103,8 @@ export async function modifyPost(
   },
   bbs_type_id: number = 1
 ): Promise<PostDto | null> {
-  const { title, content, user_id } = data
+  const { title, user_id } = data
+  const content = sanitizePostContent(data.content ?? '')
 
   // 유효성 검증
   if (!title || title.trim().length === 0) {
@@ -113,7 +136,14 @@ export async function modifyPost(
     )
   }
 
-  return await updatePost(post_id, bbs_type_id, { title: title.trim(), content: content.trim() })
+  const updatedPost = await updatePost(post_id, bbs_type_id, {
+    title: title.trim(),
+    content: content.trim(),
+  })
+  if (updatedPost) {
+    await syncPostImages(post_id, updatedPost.content ?? '')
+  }
+  return updatedPost
 }
 
 /**
