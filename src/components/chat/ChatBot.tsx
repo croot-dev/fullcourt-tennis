@@ -85,14 +85,14 @@ export default function ChatBot() {
             justify="space-between"
             px={4}
             py={3}
-            bg="teal.500"
+            bg="fullcourt.buttonPrimaryBg"
             color="white"
             borderTopRadius={{ base: '0', md: 'xl' }}
           >
             <HStack gap={2}>
               <LuMessageCircle size={20} />
               <Text fontWeight="bold" fontSize="sm">
-                이테모 AI 어시스턴트
+                풀코트 AI 어시스턴트
               </Text>
             </HStack>
             <HStack gap={1}>
@@ -102,7 +102,7 @@ export default function ChatBot() {
                 color="white"
                 size="sm"
                 onClick={clearMessages}
-                _hover={{ bg: 'teal.600' }}
+                _hover={{ bg: 'fullcourt.buttonPrimaryHover' }}
               >
                 <LuTrash2 size={16} />
               </IconButton>
@@ -112,7 +112,7 @@ export default function ChatBot() {
                 color="white"
                 size="sm"
                 onClick={() => setIsOpen(false)}
-                _hover={{ bg: 'teal.600' }}
+                _hover={{ bg: 'fullcourt.buttonPrimaryHover' }}
               >
                 <LuX size={20} />
               </IconButton>

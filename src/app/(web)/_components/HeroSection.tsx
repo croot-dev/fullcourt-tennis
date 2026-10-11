@@ -22,9 +22,11 @@ interface HeroSectionProps {
 export default function HeroSection({ heroEvents }: HeroSectionProps) {
   return (
     <Box
-      bg="fullcourt.sectionBg"
-      color="fullcourt.text"
-      py={{ base: 16, md: 24 }}
+      bg="fullcourt.footerBg"
+      color="fullcourt.ivory"
+      py={{ base: 10, md: 16 }}
+      borderBottomWidth="3px"
+      borderColor="fullcourt.gold"
     >
       <Container maxW="container.xl">
         <SimpleGrid columns={{ base: 1, lg: 2 }} gap={{ base: 8, lg: 16 }}>
@@ -40,7 +42,7 @@ export default function HeroSection({ heroEvents }: HeroSectionProps) {
             <Heading
               size={{ base: 'xl', md: '3xl' }}
               lineHeight={1.2}
-              fontFamily="Poppins, sans-serif"
+              letterSpacing="tight"
             >
               코트 전체를 열정으로 가득 채우는
               <br />
@@ -49,7 +51,8 @@ export default function HeroSection({ heroEvents }: HeroSectionProps) {
             <Text
               fontSize={{ base: 'md', md: 'xl' }}
               maxW="xl"
-              color="fullcourt.textSoft"
+              color="fullcourt.ivory"
+              opacity={0.85}
             >
               풀코트는 테니스를 막 시작한 20~30대 테린이들이 함께 배우고, 함께
               즐기며 꾸준히 성장하는 테니스 모임입니다.
@@ -58,9 +61,9 @@ export default function HeroSection({ heroEvents }: HeroSectionProps) {
               <Link href="/schedule">
                 <Button
                   size="lg"
-                  bg="fullcourt.buttonPrimaryBg"
-                  color="fullcourt.buttonPrimaryText"
-                  _hover={{ bg: 'fullcourt.buttonPrimaryHover' }}
+                  bg="fullcourt.gold"
+                  color="fullcourt.text"
+                  _hover={{ bg: 'fullcourt.ivory' }}
                 >
                   전체 일정 보기
                 </Button>
@@ -70,8 +73,8 @@ export default function HeroSection({ heroEvents }: HeroSectionProps) {
                   size="lg"
                   variant="outline"
                   borderColor="fullcourt.buttonOutlineBorder"
-                  color="fullcourt.text"
-                  _hover={{ bg: 'fullcourt.buttonOutlineHover' }}
+                  color="fullcourt.ivory"
+                  _hover={{ bg: 'whiteAlpha.100' }}
                 >
                   공지사항 보기
                 </Button>
@@ -79,7 +82,13 @@ export default function HeroSection({ heroEvents }: HeroSectionProps) {
             </HStack>
           </VStack>
 
-          <Card.Root bg="fullcourt.cardBg" borderColor="fullcourt.border">
+          <Card.Root
+            bg="fullcourt.cardBg"
+            color="fullcourt.text"
+            borderColor="fullcourt.gold"
+            alignSelf="center"
+            width="full"
+          >
             <Card.Header>
               <HStack color="fullcourt.text">
                 <FaCalendarAlt />

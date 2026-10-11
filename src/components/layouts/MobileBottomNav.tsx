@@ -29,9 +29,9 @@ export default function MobileBottomNav() {
         bottom={0}
         left={0}
         right={0}
-        bg="white"
+        bg="fullcourt.cardBg"
         borderTopWidth="1px"
-        borderColor="gray.200"
+        borderColor="fullcourt.border"
         zIndex={10}
         pb="env(safe-area-inset-bottom)"
       >
@@ -40,15 +40,21 @@ export default function MobileBottomNav() {
             const isActive = pathname.startsWith(item.href)
             const Icon = item.icon
             return (
-              <Link key={item.href} href={item.href}>
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive ? 'page' : undefined}
+              >
                 <Flex
                   direction="column"
                   align="center"
                   justify="center"
+                  bg={isActive ? 'fullcourt.accentBg' : 'transparent'}
+                  borderRadius="md"
                   px={4}
                   py={2}
-                  color={isActive ? 'teal.500' : 'gray.500'}
-                  _hover={{ color: 'teal.500' }}
+                  color={isActive ? 'fullcourt.text' : 'fullcourt.textMuted'}
+                  _hover={{ color: 'fullcourt.text' }}
                 >
                   <Icon size={24} />
                   <Text
