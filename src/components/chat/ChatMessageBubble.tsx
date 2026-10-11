@@ -13,7 +13,7 @@ export default function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
   return (
     <Box alignSelf={isUser ? 'flex-end' : 'flex-start'} maxW="85%">
       <Box
-        bg={isUser ? 'teal.500' : 'gray.100'}
+        bg={isUser ? 'fullcourt.buttonPrimaryBg' : 'gray.100'}
         color={isUser ? 'white' : 'gray.800'}
         px={3}
         py={2}

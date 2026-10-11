@@ -8,11 +8,12 @@ import {
 } from '@chakra-ui/react'
 import { ColorModeProvider, type ColorModeProviderProps } from './color-mode'
 import { AlertDialogProvider } from './alert-dialog'
-import { fullcourtHex } from '@/theme/fullcourt.colors'
+import { fullcourtHex, fullcourtPalette } from '@/theme/fullcourt.colors'
 
 export function Provider(props: ColorModeProviderProps) {
   const config = defineConfig({
     globalCss: {
+      body: { colorPalette: 'blue', color: 'fullcourt.text' },
       '*': {
         touchAction: 'manipulation',
       },
@@ -20,7 +21,11 @@ export function Provider(props: ColorModeProviderProps) {
     theme: {
       tokens: {
         colors: {
+          blue: fullcourtPalette,
+          teal: fullcourtPalette,
           fullcourt: {
+            gold: { value: fullcourtHex.gold },
+            ivory: { value: fullcourtHex.ivory },
             pageBg: { value: fullcourtHex.pageBg },
             sectionBg: { value: fullcourtHex.sectionBg },
             cardBg: { value: fullcourtHex.cardBg },
@@ -44,7 +49,39 @@ export function Provider(props: ColorModeProviderProps) {
           },
         },
       },
+      semanticTokens: {
+        colors: {
+          bg: {
+            DEFAULT: { value: '{colors.fullcourt.cardBg}' },
+            panel: { value: '{colors.fullcourt.cardBg}' },
+            subtle: { value: '{colors.fullcourt.pageBg}' },
+            muted: { value: '{colors.fullcourt.sectionBg}' },
+          },
+          fg: {
+            DEFAULT: { value: '{colors.fullcourt.text}' },
+            muted: { value: '{colors.fullcourt.textSoft}' },
+            subtle: { value: '{colors.fullcourt.textMuted}' },
+          },
+          border: { DEFAULT: { value: '{colors.fullcourt.border}' } },
+        },
+      },
+      slotRecipes: {
+        card: {
+          slots: ['root', 'header', 'body', 'footer', 'title', 'description'],
+          base: {
+            root: {
+              borderColor: 'fullcourt.border',
+              bg: 'fullcourt.cardBg',
+              boxShadow: '0 2px 8px rgba(25, 52, 73, 0.04)',
+            },
+          },
+        },
+      },
       recipes: {
+        button: {
+          base: { borderRadius: 'md' },
+          defaultVariants: { colorPalette: 'blue' },
+        },
         textarea: {
           defaultVariants: {
             size: 'lg',

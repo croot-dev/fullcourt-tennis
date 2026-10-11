@@ -3,7 +3,13 @@ import Link from 'next/link'
 
 export default function Footer() {
   return (
-    <Box as="footer" bg="gray.800" py={6}>
+    <Box
+      as="footer"
+      bg="fullcourt.footerBg"
+      borderTopWidth="1px"
+      borderColor="fullcourt.gold"
+      py={6}
+    >
       <Container maxW="container.xl">
         <Flex
           direction={{ base: 'column', md: 'row' }}
@@ -11,7 +17,7 @@ export default function Footer() {
           align="center"
           gap={4}
         >
-          <Text fontSize="sm" color="gray.400">
+          <Text fontSize="sm" color="fullcourt.ivory">
             © 2026 풀코트 테니스 모임
           </Text>
 
@@ -19,8 +25,8 @@ export default function Footer() {
             <Link href="/terms/service">
               <Text
                 fontSize="sm"
-                color="gray.400"
-                _hover={{ color: 'gray.700' }}
+                color="fullcourt.ivory"
+                _hover={{ color: 'fullcourt.gold' }}
               >
                 이용약관
               </Text>
@@ -28,8 +34,8 @@ export default function Footer() {
             <Link href="/terms/privacy">
               <Text
                 fontSize="sm"
-                color="gray.400"
-                _hover={{ color: 'gray.700' }}
+                color="fullcourt.ivory"
+                _hover={{ color: 'fullcourt.gold' }}
               >
                 개인정보처리방침
               </Text>

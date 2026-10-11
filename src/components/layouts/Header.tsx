@@ -40,17 +40,13 @@ export default function Header() {
 
   const menuItems = [
     { label: '공지사항', href: '/notice' },
-    ...(!!isLoggedIn
-      ? [
-          { label: '커뮤니티', href: '/community' },
-          { label: '블라인드', href: '/blind' },
-          {
-            ...(isOperator
-              ? { label: '관리', href: '/management' }
-              : { label: '회원', href: '/member' }),
-          },
-        ]
-      : []),
+    { label: '커뮤니티', href: '/community' },
+    { label: '블라인드', href: '/blind' },
+    {
+      ...(isOperator
+        ? { label: '관리', href: '/management' }
+        : { label: '회원', href: '/member' }),
+    },
   ]
 
   const handleLogoutClick = () => {
@@ -61,9 +57,9 @@ export default function Header() {
   return (
     <Box
       as="header"
-      bg="white"
-      borderBottom="1px"
-      borderColor="gray.200"
+      bg="fullcourt.cardBg"
+      borderBottomWidth="1px"
+      borderColor="fullcourt.border"
       position="sticky"
       top={0}
       zIndex={10}
@@ -71,14 +67,28 @@ export default function Header() {
       <Container maxW="container.xl">
         <Flex h={16} align="center" justify="space-between">
           {/* Logo */}
-          <Link href="/">
-            <Image
-              src="/logo.png"
-              alt="이테모"
-              width={40}
-              height={40}
-              style={{ objectFit: 'contain' }}
-            />
+          <Link href="/" aria-label="풀코트 홈">
+            <HStack gap={3}>
+              <Image
+                src="/logo.png"
+                alt="풀코트 테니스 클럽"
+                width={48}
+                height={48}
+                style={{ objectFit: 'contain' }}
+              />
+              <Box>
+                <Text fontSize="sm" fontWeight="bold" letterSpacing="0.12em">
+                  FULL COURT
+                </Text>
+                <Text
+                  fontSize="10px"
+                  color="fullcourt.pointAmber"
+                  letterSpacing="0.16em"
+                >
+                  TENNIS CLUB
+                </Text>
+              </Box>
+            </HStack>
           </Link>
 
           {/* Desktop Navigation */}
@@ -89,10 +99,10 @@ export default function Header() {
                   px={3}
                   py={2}
                   rounded="md"
-                  _hover={{ bg: 'gray.100' }}
+                  _hover={{ bg: 'fullcourt.sectionBg' }}
                   cursor="pointer"
                   fontWeight="medium"
-                  color="gray.700"
+                  color="fullcourt.text"
                 >
                   {item.label}
                 </Box>
@@ -108,7 +118,7 @@ export default function Header() {
                   {user?.nickname}님
                 </Text>
                 <Button
-                  colorScheme="teal"
+                  colorPalette="blue"
                   variant="outline"
                   size="sm"
                   onClick={handleLogoutClick}
@@ -118,7 +128,7 @@ export default function Header() {
               </>
             ) : (
               <Link href={signInUrl}>
-                <Button colorScheme="teal" size="sm">
+                <Button colorPalette="blue" size="sm">
                   로그인
                 </Button>
               </Link>
@@ -130,7 +140,8 @@ export default function Header() {
             display={{ base: 'flex', md: 'none' }}
             onClick={() => setIsOpen(!isOpen)}
             variant="ghost"
-            aria-label="Open menu"
+            aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
+            aria-expanded={isOpen}
           >
             {isOpen ? <FaTimes /> : <FaBars />}
           </IconButton>
@@ -146,10 +157,10 @@ export default function Header() {
                     px={3}
                     py={2}
                     rounded="md"
-                    _hover={{ bg: 'gray.100' }}
+                    _hover={{ bg: 'fullcourt.sectionBg' }}
                     cursor="pointer"
                     fontWeight="medium"
-                    color="gray.700"
+                    color="fullcourt.text"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.label}
@@ -162,7 +173,7 @@ export default function Header() {
                     {user?.nickname}님
                   </Text>
                   <Button
-                    colorScheme="teal"
+                    colorPalette="blue"
                     variant="outline"
                     size="sm"
                     width="full"
@@ -175,7 +186,7 @@ export default function Header() {
                 <Box mt={2}>
                   <Link href={signInUrl}>
                     <Button
-                      colorScheme="teal"
+                      colorPalette="blue"
                       size="sm"
                       width="full"
                       onClick={() => setIsOpen(false)}
